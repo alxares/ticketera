@@ -1,0 +1,29 @@
+/* Estilos para niveles de prioridad */
+
+.priority-badge {
+    display: inline-block;
+    padding: 0.25em 0.6em;
+    border-radius: 12px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: white;
+    text-transform: uppercase;
+  }
+  
+  .priority-low {
+    background-color: #6c757d; /* gris */
+  }
+  
+  .priority-medium {
+    background-color: #0d6efd; /* azul */
+  }
+  
+  .priority-high {
+    background-color: #ffc107; /* amarillo */
+    color: #212529;
+  }
+  
+  .priority-urgent {
+    background-color: #dc3545; /* rojo */
+  }
+  
