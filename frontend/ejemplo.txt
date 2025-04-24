@@ -1,0 +1,3168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>TicketFlow - Ticket Management System</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
+  <style id="app-style">
+    :root {
+      --primary: #1f3a8a;
+      --secondary: #4361ee;
+      --success: #2ecc71;
+      --info: #3498db;
+      --warning: #f39c12;
+      --danger: #e74c3c;
+      --light: #f8f9fa;
+      --dark: #343a40;
+      --body-bg: #f5f7fb;
+      --sidebar-width: 280px;
+      --topbar-height: 60px;
+      --urgent-color: #e74c3c;
+      --high-color: #f39c12;
+      --medium-color: #3498db;
+      --low-color: #2ecc71;
+    }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      background-color: var(--body-bg);
+      overflow-x: hidden;
+    }
+
+    .auth-page {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: linear-gradient(135deg, #1f3a8a 0%, #4361ee 100%);
+    }
+
+    .auth-card {
+      max-width: 450px;
+      width: 100%;
+      border-radius: 12px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+      overflow: hidden;
+    }
+
+    .auth-card .card-body {
+      padding: 2.5rem;
+    }
+
+    .auth-card .auth-logo {
+      text-align: center;
+      margin-bottom: 2rem;
+    }
+
+    .auth-card .auth-logo img {
+      height: 50px;
+    }
+
+    .auth-card h4 {
+      font-weight: 700;
+      margin-bottom: 1.5rem;
+      text-align: center;
+    }
+
+    .sidebar {
+      position: fixed;
+      top: 0;
+      bottom: 0;
+      left: 0;
+      z-index: 100;
+      width: var(--sidebar-width);
+      background: #fff;
+      box-shadow: 0 0 15px rgba(0, 0, 0, 0.05);
+      transition: all 0.3s;
+    }
+
+    .sidebar-header {
+      padding: 1.5rem;
+      border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+    }
+
+    .sidebar-logo {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--primary);
+    }
+
+    .sidebar-menu {
+      padding: 1rem 0;
+    }
+
+    .sidebar-menu-item {
+      padding: 0.625rem 1.5rem;
+      display: flex;
+      align-items: center;
+      color: var(--dark);
+      transition: all 0.3s;
+    }
+
+    .sidebar-menu-item:hover, .sidebar-menu-item.active {
+      color: var(--primary);
+      background-color: rgba(67, 97, 238, 0.05);
+    }
+
+    .sidebar-menu-icon {
+      margin-right: 0.75rem;
+      font-size: 1.25rem;
+    }
+
+    .sidebar-menu-text {
+      font-weight: 500;
+    }
+
+    .main-content {
+      margin-left: var(--sidebar-width);
+      padding-top: var(--topbar-height);
+      min-height: 100vh;
+      transition: all 0.3s;
+    }
+
+    .topbar {
+      position: fixed;
+      top: 0;
+      right: 0;
+      left: var(--sidebar-width);
+      height: var(--topbar-height);
+      background: #fff;
+      z-index: 99;
+      padding: 0 1.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      box-shadow: 0 1px 0 rgba(0, 0, 0, 0.05);
+      transition: all 0.3s;
+    }
+
+    .user-dropdown {
+      display: flex;
+      align-items: center;
+    }
+
+    .user-dropdown .avatar {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      overflow: hidden;
+      margin-right: 0.75rem;
+    }
+
+    .user-dropdown .user-info {
+      line-height: 1.1;
+    }
+
+    .user-dropdown .user-name {
+      font-weight: 600;
+      color: var(--dark);
+    }
+
+    .user-dropdown .user-role {
+      font-size: 0.75rem;
+      color: var(--secondary);
+    }
+
+    .page-content {
+      padding: 1.5rem;
+    }
+
+    .card {
+      border: 0;
+      box-shadow: 0 0 15px rgba(0, 0, 0, 0.05);
+      border-radius: 10px;
+      margin-bottom: 1.5rem;
+    }
+
+    .card-header {
+      background-color: transparent;
+      border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+      padding: 1.25rem 1.5rem;
+    }
+
+    .card-title {
+      font-weight: 600;
+      margin-bottom: 0;
+    }
+
+    .card-body {
+      padding: 1.5rem;
+    }
+
+    .badge {
+      font-weight: 500;
+      padding: 0.5em 0.75em;
+      border-radius: 6px;
+    }
+
+    .badge-urgent {
+      background-color: var(--urgent-color);
+      color: white;
+    }
+
+    .badge-high {
+      background-color: var(--high-color);
+      color: white;
+    }
+
+    .badge-medium {
+      background-color: var(--medium-color);
+      color: white;
+    }
+
+    .badge-low {
+      background-color: var(--low-color);
+      color: white;
+    }
+
+    .priority-dot {
+      display: inline-block;
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      margin-right: 5px;
+    }
+
+    .priority-urgent {
+      background-color: var(--urgent-color);
+    }
+
+    .priority-high {
+      background-color: var(--high-color);
+    }
+
+    .priority-medium {
+      background-color: var(--medium-color);
+    }
+
+    .priority-low {
+      background-color: var(--low-color);
+    }
+
+    .ticket-list-item {
+      padding: 1rem;
+      border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+      transition: all 0.3s;
+    }
+
+    .ticket-list-item:last-child {
+      border-bottom: 0;
+    }
+
+    .ticket-list-item:hover {
+      background-color: rgba(0, 0, 0, 0.01);
+    }
+
+    .ticket-id {
+      font-weight: 500;
+      color: var(--primary);
+    }
+
+    .ticket-meta {
+      font-size: 0.75rem;
+      color: #6c757d;
+    }
+
+    .ticket-detail-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1.5rem;
+    }
+
+    .chat-container {
+      height: calc(100vh - 300px);
+      display: flex;
+      flex-direction: column;
+    }
+
+    .chat-messages {
+      flex: 1;
+      overflow-y: auto;
+      padding: 1rem;
+      background: #f9f9f9;
+      border-radius: 10px;
+    }
+
+    .chat-message {
+      margin-bottom: 1rem;
+      max-width: 80%;
+    }
+
+    .chat-message.sent {
+      margin-left: auto;
+    }
+
+    .chat-message.received {
+      margin-right: auto;
+    }
+
+    .chat-bubble {
+      padding: 0.75rem 1rem;
+      border-radius: 1rem;
+      position: relative;
+    }
+
+    .chat-message.sent .chat-bubble {
+      background-color: var(--primary);
+      color: white;
+      border-bottom-right-radius: 0;
+    }
+
+    .chat-message.received .chat-bubble {
+      background-color: #e9ecef;
+      border-bottom-left-radius: 0;
+    }
+
+    .chat-bubble-meta {
+      font-size: 0.7rem;
+      margin-top: 0.25rem;
+    }
+
+    .chat-message.sent .chat-bubble-meta {
+      text-align: right;
+      color: #6c757d;
+    }
+
+    .chat-message.received .chat-bubble-meta {
+      color: #6c757d;
+    }
+
+    .chat-input {
+      margin-top: 1rem;
+    }
+
+    .section-divider {
+      display: flex;
+      align-items: center;
+      margin: 1.5rem 0;
+    }
+
+    .section-divider .divider-line {
+      flex: 1;
+      height: 1px;
+      background: rgba(0, 0, 0, 0.1);
+    }
+
+    .section-divider .divider-text {
+      padding: 0 1rem;
+      font-size: 0.875rem;
+      color: #6c757d;
+    }
+
+    .stats-card {
+      border-radius: 10px;
+      padding: 1.5rem;
+      height: 100%;
+      transition: all 0.3s;
+    }
+
+    .stats-card:hover {
+      transform: translateY(-5px);
+    }
+
+    .stats-card .stats-icon {
+      width: 50px;
+      height: 50px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 1rem;
+      font-size: 1.5rem;
+    }
+
+    .stats-card .stats-number {
+      font-size: 2rem;
+      font-weight: 700;
+      line-height: 1;
+      margin-bottom: 0.5rem;
+    }
+
+    .stats-card .stats-text {
+      color: #6c757d;
+      font-size: 0.875rem;
+    }
+
+    @media (max-width: 992px) {
+      .sidebar {
+        left: -280px;
+      }
+      .sidebar.show {
+        left: 0;
+      }
+      .main-content {
+        margin-left: 0;
+      }
+      .topbar {
+        left: 0;
+      }
+    }
+
+    /* Loading animation */
+    .loader {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100px;
+    }
+
+    .loader-dot {
+      width: 10px;
+      height: 10px;
+      margin: 0 5px;
+      border-radius: 50%;
+      background-color: var(--primary);
+      animation: loader 1.4s infinite ease-in-out both;
+    }
+
+    .loader-dot:nth-child(1) {
+      animation-delay: -0.32s;
+    }
+
+    .loader-dot:nth-child(2) {
+      animation-delay: -0.16s;
+    }
+
+    @keyframes loader {
+      0%, 80%, 100% {
+        transform: scale(0);
+      }
+      40% {
+        transform: scale(1);
+      }
+    }
+
+    /* Hidden sections */
+    .auth-page, .dashboard-admin, .dashboard-manager, .dashboard-user, .new-ticket, .ticket-details, 
+    .user-management, .department-management, .chat-page, .reports-page, .settings-page {
+      display: none;
+    }
+
+    /* Initially show the login page */
+    .auth-page {
+      display: flex;
+    }
+  </style>
+</head>
+<body>
+  <!-- Login/Register Page -->
+  <div class="auth-page">
+    <div class="container">
+      <div class="row justify-content-center">
+        <div class="col-md-6">
+          <div class="card auth-card">
+            <div class="card-body">
+              <div class="auth-logo">
+                <h1 class="text-white">TicketFlow</h1>
+              </div>
+              
+              <ul class="nav nav-tabs mb-4" id="authTabs" role="tablist">
+                <li class="nav-item" role="presentation">
+                  <button class="nav-link active" id="login-tab" data-bs-toggle="tab" data-bs-target="#login-pane" type="button" role="tab" aria-controls="login-pane" aria-selected="true">Login</button>
+                </li>
+                <li class="nav-item" role="presentation">
+                  <button class="nav-link" id="register-tab" data-bs-toggle="tab" data-bs-target="#register-pane" type="button" role="tab" aria-controls="register-pane" aria-selected="false">Register</button>
+                </li>
+              </ul>
+              
+              <div class="tab-content" id="authTabsContent">
+                <!-- Login Form -->
+                <div class="tab-pane fade show active" id="login-pane" role="tabpanel" aria-labelledby="login-tab">
+                  <form id="loginForm">
+                    <div class="mb-3">
+                      <label for="loginUsername" class="form-label">Username or Email</label>
+                      <input type="text" class="form-control" id="loginUsername" required>
+                    </div>
+                    <div class="mb-3">
+                      <label for="loginPassword" class="form-label">Password</label>
+                      <input type="password" class="form-control" id="loginPassword" required>
+                    </div>
+                    <div class="mb-3 form-check">
+                      <input type="checkbox" class="form-check-input" id="rememberMe">
+                      <label class="form-check-label" for="rememberMe">Remember me</label>
+                    </div>
+                    <button type="submit" class="btn btn-primary w-100">Sign In</button>
+                  </form>
+                </div>
+                
+                <!-- Register Form -->
+                <div class="tab-pane fade" id="register-pane" role="tabpanel" aria-labelledby="register-tab">
+                  <form id="registerForm">
+                    <div class="mb-3">
+                      <label for="fullName" class="form-label">Full Name</label>
+                      <input type="text" class="form-control" id="fullName" required>
+                    </div>
+                    <div class="mb-3">
+                      <label for="email" class="form-label">Email</label>
+                      <input type="email" class="form-control" id="email" required>
+                    </div>
+                    <div class="mb-3">
+                      <label for="username" class="form-label">Username</label>
+                      <input type="text" class="form-control" id="username" required>
+                    </div>
+                    <div class="mb-3">
+                      <label for="department" class="form-label">Department</label>
+                      <select class="form-select" id="department" required>
+                        <option value="" disabled selected>Select Department</option>
+                        <option value="it">IT</option>
+                        <option value="hr">Human Resources</option>
+                        <option value="finance">Finance</option>
+                        <option value="marketing">Marketing</option>
+                        <option value="operations">Operations</option>
+                      </select>
+                    </div>
+                    <div class="mb-3">
+                      <label for="password" class="form-label">Password</label>
+                      <input type="password" class="form-control" id="password" required>
+                    </div>
+                    <div class="mb-3">
+                      <label for="confirmPassword" class="form-label">Confirm Password</label>
+                      <input type="password" class="form-control" id="confirmPassword" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary w-100">Create Account</button>
+                  </form>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main Application Structure -->
+  <div class="app-container">
+    <!-- Sidebar -->
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-header">
+        <div class="sidebar-logo">
+          <i class="bi bi-ticket-perforated-fill"></i> TicketFlow
+        </div>
+      </div>
+      <div class="sidebar-menu">
+        <a href="javascript:void(0)" class="sidebar-menu-item active" id="nav-dashboard">
+          <span class="sidebar-menu-icon"><i class="bi bi-speedometer2"></i></span>
+          <span class="sidebar-menu-text">Dashboard</span>
+        </a>
+        <a href="javascript:void(0)" class="sidebar-menu-item" id="nav-tickets">
+          <span class="sidebar-menu-icon"><i class="bi bi-ticket-perforated"></i></span>
+          <span class="sidebar-menu-text">Tickets</span>
+        </a>
+        <a href="javascript:void(0)" class="sidebar-menu-item" id="nav-new-ticket">
+          <span class="sidebar-menu-icon"><i class="bi bi-plus-square"></i></span>
+          <span class="sidebar-menu-text">New Ticket</span>
+        </a>
+        <a href="javascript:void(0)" class="sidebar-menu-item" id="nav-chat">
+          <span class="sidebar-menu-icon"><i class="bi bi-chat-dots"></i></span>
+          <span class="sidebar-menu-text">Chat</span>
+        </a>
+        <a href="javascript:void(0)" class="sidebar-menu-item admin-only" id="nav-users">
+          <span class="sidebar-menu-icon"><i class="bi bi-people"></i></span>
+          <span class="sidebar-menu-text">Users</span>
+        </a>
+        <a href="javascript:void(0)" class="sidebar-menu-item admin-only" id="nav-departments">
+          <span class="sidebar-menu-icon"><i class="bi bi-building"></i></span>
+          <span class="sidebar-menu-text">Departments</span>
+        </a>
+        <a href="javascript:void(0)" class="sidebar-menu-item" id="nav-reports">
+          <span class="sidebar-menu-icon"><i class="bi bi-file-earmark-bar-graph"></i></span>
+          <span class="sidebar-menu-text">Reports</span>
+        </a>
+        <a href="javascript:void(0)" class="sidebar-menu-item admin-only" id="nav-settings">
+          <span class="sidebar-menu-icon"><i class="bi bi-gear"></i></span>
+          <span class="sidebar-menu-text">Settings</span>
+        </a>
+        <a href="javascript:void(0)" class="sidebar-menu-item" id="nav-logout">
+          <span class="sidebar-menu-icon"><i class="bi bi-box-arrow-right"></i></span>
+          <span class="sidebar-menu-text">Logout</span>
+        </a>
+      </div>
+    </aside>
+
+    <!-- Main Content Area -->
+    <div class="main-content" id="main-content">
+      <!-- Topbar -->
+      <header class="topbar">
+        <div class="topbar-left">
+          <button id="sidebarToggle" class="btn btn-sm d-lg-none">
+            <i class="bi bi-list"></i>
+          </button>
+          <h4 class="mb-0 d-none d-md-block">Dashboard</h4>
+        </div>
+        <div class="topbar-right">
+          <div class="dropdown">
+            <a href="javascript:void(0)" class="user-dropdown" data-bs-toggle="dropdown">
+              <div class="avatar">
+                <img src="https://ui-avatars.com/api/?name=John+Doe&background=4361ee&color=fff" alt="Avatar">
+              </div>
+              <div class="user-info d-none d-md-block">
+                <div class="user-name">John Doe</div>
+                <div class="user-role">Administrator</div>
+              </div>
+              <i class="bi bi-chevron-down ms-2"></i>
+            </a>
+            <ul class="dropdown-menu dropdown-menu-end">
+              <li><a class="dropdown-item" href="javascript:void(0)"><i class="bi bi-person me-2"></i> Profile</a></li>
+              <li><a class="dropdown-item" href="javascript:void(0)"><i class="bi bi-gear me-2"></i> Settings</a></li>
+              <li><hr class="dropdown-divider"></li>
+              <li><a class="dropdown-item" href="javascript:void(0)" id="menu-logout"><i class="bi bi-box-arrow-right me-2"></i> Logout</a></li>
+            </ul>
+          </div>
+        </div>
+      </header>
+
+      <!-- Dashboard Content (Admin) -->
+      <div class="page-content dashboard-admin">
+        <div class="container-fluid">
+          <div class="row mb-4">
+            <div class="col-12">
+              <h1 class="h3">Admin Dashboard</h1>
+              <p class="text-muted">Welcome back, John! Here's what's happening across the system.</p>
+            </div>
+          </div>
+          
+          <div class="row">
+            <div class="col-md-3 mb-4">
+              <div class="card stats-card bg-light">
+                <div class="stats-icon bg-primary text-white">
+                  <i class="bi bi-ticket"></i>
+                </div>
+                <div class="stats-number text-primary">248</div>
+                <div class="stats-text">Total Tickets</div>
+              </div>
+            </div>
+            <div class="col-md-3 mb-4">
+              <div class="card stats-card bg-light">
+                <div class="stats-icon bg-success text-white">
+                  <i class="bi bi-check-circle"></i>
+                </div>
+                <div class="stats-number text-success">182</div>
+                <div class="stats-text">Resolved Tickets</div>
+              </div>
+            </div>
+            <div class="col-md-3 mb-4">
+              <div class="card stats-card bg-light">
+                <div class="stats-icon bg-warning text-white">
+                  <i class="bi bi-hourglass-split"></i>
+                </div>
+                <div class="stats-number text-warning">66</div>
+                <div class="stats-text">Pending Tickets</div>
+              </div>
+            </div>
+            <div class="col-md-3 mb-4">
+              <div class="card stats-card bg-light">
+                <div class="stats-icon bg-danger text-white">
+                  <i class="bi bi-exclamation-octagon"></i>
+                </div>
+                <div class="stats-number text-danger">12</div>
+                <div class="stats-text">Urgent Tickets</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="col-md-8">
+              <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                  <h5 class="card-title">Recent Tickets</h5>
+                  <a href="javascript:void(0)" class="btn btn-sm btn-primary">View All</a>
+                </div>
+                <div class="card-body p-0">
+                  <div class="table-responsive">
+                    <table class="table table-hover">
+                      <thead>
+                        <tr>
+                          <th>ID</th>
+                          <th>Subject</th>
+                          <th>Department</th>
+                          <th>Priority</th>
+                          <th>Status</th>
+                          <th>Created</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr>
+                          <td><a href="javascript:void(0)" class="ticket-id">#TK-1025</a></td>
+                          <td>Network connectivity issue</td>
+                          <td>IT</td>
+                          <td><span class="badge badge-high">High</span></td>
+                          <td><span class="badge bg-warning">In Progress</span></td>
+                          <td>Today, 9:45 AM</td>
+                        </tr>
+                        <tr>
+                          <td><a href="javascript:void(0)" class="ticket-id">#TK-1024</a></td>
+                          <td>Email not sending</td>
+                          <td>IT</td>
+                          <td><span class="badge badge-medium">Medium</span></td>
+                          <td><span class="badge bg-success">Resolved</span></td>
+                          <td>Yesterday, 3:20 PM</td>
+                        </tr>
+                        <tr>
+                          <td><a href="javascript:void(0)" class="ticket-id">#TK-1023</a></td>
+                          <td>Payroll system error</td>
+                          <td>Finance</td>
+                          <td><span class="badge badge-urgent">Urgent</span></td>
+                          <td><span class="badge bg-primary">Assigned</span></td>
+                          <td>Yesterday, 1:15 PM</td>
+                        </tr>
+                        <tr>
+                          <td><a href="javascript:void(0)" class="ticket-id">#TK-1022</a></td>
+                          <td>New hire documentation</td>
+                          <td>HR</td>
+                          <td><span class="badge badge-low">Low</span></td>
+                          <td><span class="badge bg-success">Resolved</span></td>
+                          <td>Mar 15, 2025</td>
+                        </tr>
+                        <tr>
+                          <td><a href="javascript:void(0)" class="ticket-id">#TK-1021</a></td>
+                          <td>Marketing campaign support</td>
+                          <td>Marketing</td>
+                          <td><span class="badge badge-medium">Medium</span></td>
+                          <td><span class="badge bg-secondary">Closed</span></td>
+                          <td>Mar 14, 2025</td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-4">
+              <div class="card">
+                <div class="card-header">
+                  <h5 class="card-title">Department Overview</h5>
+                </div>
+                <div class="card-body">
+                  <div class="mb-4">
+                    <div class="d-flex justify-content-between mb-2">
+                      <span>IT Department</span>
+                      <span>42 tickets</span>
+                    </div>
+                    <div class="progress" style="height: 10px;">
+                      <div class="progress-bar bg-primary" role="progressbar" style="width: 42%;" aria-valuenow="42" aria-valuemin="0" aria-valuemax="100"></div>
+                    </div>
+                  </div>
+                  <div class="mb-4">
+                    <div class="d-flex justify-content-between mb-2">
+                      <span>HR Department</span>
+                      <span>21 tickets</span>
+                    </div>
+                    <div class="progress" style="height: 10px;">
+                      <div class="progress-bar bg-success" role="progressbar" style="width: 21%;" aria-valuenow="21" aria-valuemin="0" aria-valuemax="100"></div>
+                    </div>
+                  </div>
+                  <div class="mb-4">
+                    <div class="d-flex justify-content-between mb-2">
+                      <span>Finance Department</span>
+                      <span>18 tickets</span>
+                    </div>
+                    <div class="progress" style="height: 10px;">
+                      <div class="progress-bar bg-info" role="progressbar" style="width: 18%;" aria-valuenow="18" aria-valuemin="0" aria-valuemax="100"></div>
+                    </div>
+                  </div>
+                  <div class="mb-4">
+                    <div class="d-flex justify-content-between mb-2">
+                      <span>Marketing Department</span>
+                      <span>15 tickets</span>
+                    </div>
+                    <div class="progress" style="height: 10px;">
+                      <div class="progress-bar bg-warning" role="progressbar" style="width: 15%;" aria-valuenow="15" aria-valuemin="0" aria-valuemax="100"></div>
+                    </div>
+                  </div>
+                  <div>
+                    <div class="d-flex justify-content-between mb-2">
+                      <span>Operations Department</span>
+                      <span>24 tickets</span>
+                    </div>
+                    <div class="progress" style="height: 10px;">
+                      <div class="progress-bar bg-danger" role="progressbar" style="width: 24%;" aria-valuenow="24" aria-valuemin="0" aria-valuemax="100"></div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Dashboard Content (Manager) -->
+      <div class="page-content dashboard-manager">
+        <div class="container-fluid">
+          <div class="row mb-4">
+            <div class="col-12">
+              <h1 class="h3">Manager Dashboard</h1>
+              <p class="text-muted">Welcome back, Sarah! Here's the status of tickets in your department.</p>
+            </div>
+          </div>
+          
+          <div class="row">
+            <div class="col-md-3 mb-4">
+              <div class="card stats-card bg-light">
+                <div class="stats-icon bg-primary text-white">
+                  <i class="bi bi-ticket"></i>
+                </div>
+                <div class="stats-number text-primary">56</div>
+                <div class="stats-text">Department Tickets</div>
+              </div>
+            </div>
+            <div class="col-md-3 mb-4">
+              <div class="card stats-card bg-light">
+                <div class="stats-icon bg-success text-white">
+                  <i class="bi bi-check-circle"></i>
+                </div>
+                <div class="stats-number text-success">38</div>
+                <div class="stats-text">Resolved Tickets</div>
+              </div>
+            </div>
+            <div class="col-md-3 mb-4">
+              <div class="card stats-card bg-light">
+                <div class="stats-icon bg-warning text-white">
+                  <i class="bi bi-hourglass-split"></i>
+                </div>
+                <div class="stats-number text-warning">18</div>
+                <div class="stats-text">Pending Tickets</div>
+              </div>
+            </div>
+            <div class="col-md-3 mb-4">
+              <div class="card stats-card bg-light">
+                <div class="stats-icon bg-danger text-white">
+                  <i class="bi bi-exclamation-octagon"></i>
+                </div>
+                <div class="stats-number text-danger">5</div>
+                <div class="stats-text">Urgent Tickets</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="col-md-8">
+              <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                  <h5 class="card-title">Department Tickets</h5>
+                  <div>
+                    <button class="btn btn-primary btn-sm">Assign Tickets</button>
+                  </div>
+                </div>
+                <div class="card-body p-0">
+                  <div class="table-responsive">
+                    <table class="table table-hover">
+                      <thead>
+                        <tr>
+                          <th>
+                            <div class="form-check">
+                              <input class="form-check-input" type="checkbox" id="selectAllTickets">
+                            </div>
+                          </th>
+                          <th>ID</th>
+                          <th>Subject</th>
+                          <th>Assigned to</th>
+                          <th>Priority</th>
+                          <th>Status</th>
+                          <th>Created</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr>
+                          <td>
+                            <div class="form-check">
+                              <input class="form-check-input" type="checkbox">
+                            </div>
+                          </td>
+                          <td><a href="javascript:void(0)" class="ticket-id">#TK-1025</a></td>
+                          <td>Network connectivity issue</td>
+                          <td>Mike Johnson</td>
+                          <td><span class="badge badge-high">High</span></td>
+                          <td><span class="badge bg-warning">In Progress</span></td>
+                          <td>Today, 9:45 AM</td>
+                        </tr>
+                        <tr>
+                          <td>
+                            <div class="form-check">
+                              <input class="form-check-input" type="checkbox">
+                            </div>
+                          </td>
+                          <td><a href="javascript:void(0)" class="ticket-id">#TK-1024</a></td>
+                          <td>Email not sending</td>
+                          <td>Lisa Chen</td>
+                          <td><span class="badge badge-medium">Medium</span></td>
+                          <td><span class="badge bg-success">Resolved</span></td>
+                          <td>Yesterday, 3:20 PM</td>
+                        </tr>
+                        <tr>
+                          <td>
+                            <div class="form-check">
+                              <input class="form-check-input" type="checkbox">
+                            </div>
+                          </td>
+                          <td><a href="javascript:void(0)" class="ticket-id">#TK-1020</a></td>
+                          <td>Software installation request</td>
+                          <td>Unassigned</td>
+                          <td><span class="badge badge-low">Low</span></td>
+                          <td><span class="badge bg-secondary">New</span></td>
+                          <td>Mar 12, 2025</td>
+                        </tr>
+                        <tr>
+                          <td>
+                            <div class="form-check">
+                              <input class="form-check-input" type="checkbox">
+                            </div>
+                          </td>
+                          <td><a href="javascript:void(0)" class="ticket-id">#TK-1018</a></td>
+                          <td>Password reset request</td>
+                          <td>Unassigned</td>
+                          <td><span class="badge badge-medium">Medium</span></td>
+                          <td><span class="badge bg-secondary">New</span></td>
+                          <td>Mar 11, 2025</td>
+                        </tr>
+                        <tr>
+                          <td>
+                            <div class="form-check">
+                              <input class="form-check-input" type="checkbox">
+                            </div>
+                          </td>
+                          <td><a href="javascript:void(0)" class="ticket-id">#TK-1015</a></td>
+                          <td>Server maintenance request</td>
+                          <td>Mike Johnson</td>
+                          <td><span class="badge badge-urgent">Urgent</span></td>
+                          <td><span class="badge bg-primary">Assigned</span></td>
+                          <td>Mar 10, 2025</td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-4">
+              <div class="card mb-4">
+                <div class="card-header">
+                  <h5 class="card-title">Team Performance</h5>
+                </div>
+                <div class="card-body">
+                  <div class="mb-4">
+                    <div class="d-flex justify-content-between mb-2">
+                      <span>Mike Johnson</span>
+                      <span>18 tickets</span>
+                    </div>
+                    <div class="progress" style="height: 10px;">
+                      <div class="progress-bar bg-primary" role="progressbar" style="width: 45%;" aria-valuenow="45" aria-valuemin="0" aria-valuemax="100"></div>
+                    </div>
+                  </div>
+                  <div class="mb-4">
+                    <div class="d-flex justify-content-between mb-2">
+                      <span>Lisa Chen</span>
+                      <span>14 tickets</span>
+                    </div>
+                    <div class="progress" style="height: 10px;">
+                      <div class="progress-bar bg-success" role="progressbar" style="width: 35%;" aria-valuenow="35" aria-valuemin="0" aria-valuemax="100"></div>
+                    </div>
+                  </div>
+                  <div class="mb-4">
+                    <div class="d-flex justify-content-between mb-2">
+                      <span>David Kim</span>
+                      <span>8 tickets</span>
+                    </div>
+                    <div class="progress" style="height: 10px;">
+                      <div class="progress-bar bg-info" role="progressbar" style="width: 20%;" aria-valuenow="20" aria-valuemin="0" aria-valuemax="100"></div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              
+              <div class="card">
+                <div class="card-header">
+                  <h5 class="card-title">Response Time</h5>
+                </div>
+                <div class="card-body">
+                  <div class="d-flex justify-content-between align-items-center mb-4">
+                    <div>
+                      <h2 class="mb-1">2.4h</h2>
+                      <div class="text-muted">Average Response</div>
+                    </div>
+                    <div class="badge bg-success p-2">
+                      <i class="bi bi-arrow-down"></i> 18% Better
+                    </div>
+                  </div>
+                  <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                      <h2 class="mb-1">8.5h</h2>
+                      <div class="text-muted">Resolution Time</div>
+                    </div>
+                    <div class="badge bg-success p-2">
+                      <i class="bi bi-arrow-down"></i> 12% Better
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Dashboard Content (User) -->
+      <div class="page-content dashboard-user">
+        <div class="container-fluid">
+          <div class="row mb-4">
+            <div class="col-12">
+              <h1 class="h3">My Dashboard</h1>
+              <p class="text-muted">Welcome back, Mark! Here's a summary of your tickets.</p>
+            </div>
+          </div>
+          
+          <div class="row">
+            <div class="col-md-3 mb-4">
+              <div class="card stats-card bg-light">
+                <div class="stats-icon bg-primary text-white">
+                  <i class="bi bi-ticket"></i>
+                </div>
+                <div class="stats-number text-primary">12</div>
+                <div class="stats-text">My Tickets</div>
+              </div>
+            </div>
+            <div class="col-md-3 mb-4">
+              <div class="card stats-card bg-light">
+                <div class="stats-icon bg-success text-white">
+                  <i class="bi bi-check-circle"></i>
+                </div>
+                <div class="stats-number text-success">8</div>
+                <div class="stats-text">Resolved Tickets</div>
+              </div>
+            </div>
+            <div class="col-md-3 mb-4">
+              <div class="card stats-card bg-light">
+                <div class="stats-icon bg-warning text-white">
+                  <i class="bi bi-hourglass-split"></i>
+                </div>
+                <div class="stats-number text-warning">4</div>
+                <div class="stats-text">Pending Tickets</div>
+              </div>
+            </div>
+            <div class="col-md-3 mb-4">
+              <div class="card stats-card bg-light">
+                <div class="stats-icon bg-info text-white">
+                  <i class="bi bi-plus-circle"></i>
+                </div>
+                <div class="stats-number text-info">
+                  <a href="javascript:void(0)" class="text-info text-decoration-none" id="quick-new-ticket">+</a>
+                </div>
+                <div class="stats-text">New Ticket</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="col-md-8">
+              <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                  <h5 class="card-title">My Recent Tickets</h5>
+                  <a href="javascript:void(0)" class="btn btn-sm btn-primary">View All</a>
+                </div>
+                <div class="card-body p-0">
+                  <div class="ticket-list">
+                    <div class="ticket-list-item">
+                      <div class="d-flex justify-content-between align-items-start">
+                        <div>
+                          <h6 class="mb-1"><a href="javascript:void(0)" class="text-primary">#TK-1025 Network connectivity issue</a></h6>
+                          <div class="ticket-meta">Created: Today, 9:45 AM • Assigned to: IT Department</div>
+                        </div>
+                        <div>
+                          <span class="badge badge-high me-2">High</span>
+                          <span class="badge bg-warning">In Progress</span>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="ticket-list-item">
+                      <div class="d-flex justify-content-between align-items-start">
+                        <div>
+                          <h6 class="mb-1"><a href="javascript:void(0)" class="text-primary">#TK-1020 Software installation request</a></h6>
+                          <div class="ticket-meta">Created: Mar 12, 2025 • Assigned to: IT Department</div>
+                        </div>
+                        <div>
+                          <span class="badge badge-low me-2">Low</span>
+                          <span class="badge bg-secondary">New</span>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="ticket-list-item">
+                      <div class="d-flex justify-content-between align-items-start">
+                        <div>
+                          <h6 class="mb-1"><a href="javascript:void(0)" class="text-primary">#TK-1018 Password reset request</a></h6>
+                          <div class="ticket-meta">Created: Mar 11, 2025 • Assigned to: IT Department</div>
+                        </div>
+                        <div>
+                          <span class="badge badge-medium me-2">Medium</span>
+                          <span class="badge bg-success">Resolved</span>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="ticket-list-item">
+                      <div class="d-flex justify-content-between align-items-start">
+                        <div>
+                          <h6 class="mb-1"><a href="javascript:void(0)" class="text-primary">#TK-1015 Request for new monitor</a></h6>
+                          <div class="ticket-meta">Created: Mar 10, 2025 • Assigned to: IT Department</div>
+                        </div>
+                        <div>
+                          <span class="badge badge-medium me-2">Medium</span>
+                          <span class="badge bg-success">Resolved</span>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="ticket-list-item">
+                      <div class="d-flex justify-content-between align-items-start">
+                        <div>
+                          <h6 class="mb-1"><a href="javascript:void(0)" class="text-primary">#TK-1010 Meeting room booking issue</a></h6>
+                          <div class="ticket-meta">Created: Mar 5, 2025 • Assigned to: Operations</div>
+                        </div>
+                        <div>
+                          <span class="badge badge-low me-2">Low</span>
+                          <span class="badge bg-secondary">Closed</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-4">
+              <div class="card mb-4">
+                <div class="card-header">
+                  <h5 class="card-title">Recent Notifications</h5>
+                </div>
+                <div class="card-body">
+                  <div class="d-flex mb-3">
+                    <div class="flex-shrink-0">
+                      <div class="avatar bg-primary text-white d-flex align-items-center justify-content-center" style="width: 40px; height: 40px; border-radius: 8px;">
+                        <i class="bi bi-ticket"></i>
+                      </div>
+                    </div>
+                    <div class="flex-grow-1 ms-3">
+                      <p class="mb-1"><strong>Ticket Updated</strong></p>
+                      <p class="text-muted mb-0">Your ticket #TK-1025 has been updated.</p>
+                      <small class="text-muted">10 minutes ago</small>
+                    </div>
+                  </div>
+                  <div class="d-flex mb-3">
+                    <div class="flex-shrink-0">
+                      <div class="avatar bg-success text-white d-flex align-items-center justify-content-center" style="width: 40px; height: 40px; border-radius: 8px;">
+                        <i class="bi bi-check-circle"></i>
+                      </div>
+                    </div>
+                    <div class="flex-grow-1 ms-3">
+                      <p class="mb-1"><strong>Ticket Resolved</strong></p>
+                      <p class="text-muted mb-0">Your ticket #TK-1018 has been resolved.</p>
+                      <small class="text-muted">2 hours ago</small>
+                    </div>
+                  </div>
+                  <div class="d-flex">
+                    <div class="flex-shrink-0">
+                      <div class="avatar bg-info text-white d-flex align-items-center justify-content-center" style="width: 40px; height: 40px; border-radius: 8px;">
+                        <i class="bi bi-chat-dots"></i>
+                      </div>
+                    </div>
+                    <div class="flex-grow-1 ms-3">
+                      <p class="mb-1"><strong>New Message</strong></p>
+                      <p class="text-muted mb-0">You have a new message from IT Support.</p>
+                      <small class="text-muted">Yesterday</small>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              
+              <div class="card">
+                <div class="card-header">
+                  <h5 class="card-title">Quick Actions</h5>
+                </div>
+                <div class="card-body">
+                  <div class="d-grid gap-2">
+                    <button class="btn btn-primary" id="quick-actions-new-ticket">
+                      <i class="bi bi-plus-circle me-2"></i> Create New Ticket
+                    </button>
+                    <button class="btn btn-outline-primary">
+                      <i class="bi bi-chat-dots me-2"></i> Contact Support
+                    </button>
+                    <button class="btn btn-outline-primary">
+                      <i class="bi bi-question-circle me-2"></i> Help & Resources
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- New Ticket Page -->
+      <div class="page-content new-ticket">
+        <div class="container-fluid">
+          <div class="row mb-4">
+            <div class="col-12">
+              <div class="d-flex align-items-center justify-content-between">
+                <h1 class="h3">Create New Ticket</h1>
+                <a href="javascript:void(0)" class="btn btn-outline-primary" id="back-to-dashboard">
+                  <i class="bi bi-arrow-left me-2"></i> Back to Dashboard
+                </a>
+              </div>
+            </div>
+          </div>
+          
+          <div class="row">
+            <div class="col-lg-8">
+              <div class="card">
+                <div class="card-body">
+                  <form id="newTicketForm">
+                    <div class="mb-3">
+                      <label for="ticketSubject" class="form-label">Subject <span class="text-danger">*</span></label>
+                      <input type="text" class="form-control" id="ticketSubject" placeholder="Brief description of the issue" required>
+                    </div>
+                    
+                    <div class="row mb-3">
+                      <div class="col-md-6">
+                        <label for="ticketDepartment" class="form-label">Department <span class="text-danger">*</span></label>
+                        <select class="form-select" id="ticketDepartment" required>
+                          <option value="" disabled selected>Select Department</option>
+                          <option value="it">IT</option>
+                          <option value="hr">Human Resources</option>
+                          <option value="finance">Finance</option>
+                          <option value="marketing">Marketing</option>
+                          <option value="operations">Operations</option>
+                        </select>
+                      </div>
+                      <div class="col-md-6">
+                        <label for="ticketAssignee" class="form-label">Assign To (Optional)</label>
+                        <select class="form-select" id="ticketAssignee">
+                          <option value="" selected>Department Manager</option>
+                          <option value="disabled" disabled>Select Department First</option>
+                        </select>
+                      </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                      <label class="form-label">Priority <span class="text-danger">*</span></label>
+                      <div class="d-flex flex-wrap gap-2">
+                        <div class="form-check form-check-inline">
+                          <input class="form-check-input" type="radio" name="ticketPriority" id="priorityLow" value="low" required>
+                          <label class="form-check-label" for="priorityLow">
+                            <span class="priority-dot priority-low"></span> Low
+                          </label>
+                        </div>
+                        <div class="form-check form-check-inline">
+                          <input class="form-check-input" type="radio" name="ticketPriority" id="priorityMedium" value="medium" checked required>
+                          <label class="form-check-label" for="priorityMedium">
+                            <span class="priority-dot priority-medium"></span> Medium
+                          </label>
+                        </div>
+                        <div class="form-check form-check-inline">
+                          <input class="form-check-input" type="radio" name="ticketPriority" id="priorityHigh" value="high" required>
+                          <label class="form-check-label" for="priorityHigh">
+                            <span class="priority-dot priority-high"></span> High
+                          </label>
+                        </div>
+                        <div class="form-check form-check-inline">
+                          <input class="form-check-input" type="radio" name="ticketPriority" id="priorityUrgent" value="urgent" required>
+                          <label class="form-check-label" for="priorityUrgent">
+                            <span class="priority-dot priority-urgent"></span> Urgent
+                          </label>
+                        </div>
+                      </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                      <label for="ticketDescription" class="form-label">Description <span class="text-danger">*</span></label>
+                      <textarea class="form-control" id="ticketDescription" rows="6" placeholder="Please provide detailed information about your issue" required></textarea>
+                    </div>
+                    
+                    <div class="mb-3">
+                      <label for="ticketAttachments" class="form-label">Attachments</label>
+                      <input class="form-control" type="file" id="ticketAttachments" multiple>
+                      <div class="form-text">You can attach up to 5 files (max 10MB each)</div>
+                    </div>
+                    
+                    <div class="d-flex justify-content-end">
+                      <button type="button" class="btn btn-light me-2" id="cancelTicket">Cancel</button>
+                      <button type="submit" class="btn btn-primary">Submit Ticket</button>
+                    </div>
+                  </form>
+                </div>
+              </div>
+            </div>
+            
+            <div class="col-lg-4">
+              <div class="card mb-4">
+                <div class="card-header">
+                  <h5 class="card-title">Priority Guidelines</h5>
+                </div>
+                <div class="card-body">
+                  <div class="mb-3">
+                    <div class="d-flex align-items-center mb-2">
+                      <span class="priority-dot priority-urgent me-2"></span>
+                      <strong>Urgent</strong>
+                    </div>
+                    <p class="text-muted small mb-0">Critical issue that severely impacts your work. Service is down or unusable with no workaround.</p>
+                  </div>
+                  <div class="mb-3">
+                    <div class="d-flex align-items-center mb-2">
+                      <span class="priority-dot priority-high me-2"></span>
+                      <strong>High</strong>
+                    </div>
+                    <p class="text-muted small mb-0">Serious issue that impacts your work. Service is usable but severely limited.</p>
+                  </div>
+                  <div class="mb-3">
+                    <div class="d-flex align-items-center mb-2">
+                      <span class="priority-dot priority-medium me-2"></span>
+                      <strong>Medium</strong>
+                    </div>
+                    <p class="text-muted small mb-0">Issue that partially impacts your work. Some features are affected but most work can continue.</p>
+                  </div>
+                  <div>
+                    <div class="d-flex align-items-center mb-2">
+                      <span class="priority-dot priority-low me-2"></span>
+                      <strong>Low</strong>
+                    </div>
+                    <p class="text-muted small mb-0">Minor issue or question that doesn't impact your work. Inconvenient but not disruptive.</p>
+                  </div>
+                </div>
+              </div>
+              
+              <div class="card">
+                <div class="card-header">
+                  <h5 class="card-title">Tips for Quick Resolution</h5>
+                </div>
+                <div class="card-body">
+                  <ul class="text-muted small">
+                    <li class="mb-2">Be specific about the issue you're experiencing</li>
+                    <li class="mb-2">Include any error messages you've received</li>
+                    <li class="mb-2">Mention what steps you've already taken</li>
+                    <li class="mb-2">Add screenshots if possible to illustrate the issue</li>
+                    <li>Provide context about your environment</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Ticket Details Page -->
+      <div class="page-content ticket-details">
+        <div class="container-fluid">
+          <div class="row mb-4">
+            <div class="col-12">
+              <div class="d-flex align-items-center justify-content-between">
+                <h1 class="h3">Ticket #TK-1025</h1>
+                <div>
+                  <a href="javascript:void(0)" class="btn btn-outline-primary me-2" id="back-to-tickets">
+                    <i class="bi bi-arrow-left me-2"></i> Back to Tickets
+                  </a>
+                  <div class="btn-group">
+                    <button type="button" class="btn btn-primary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+                      Actions
+                    </button>
+                    <ul class="dropdown-menu dropdown-menu-end">
+                      <li><a class="dropdown-item" href="javascript:void(0)"><i class="bi bi-check-circle me-2"></i> Mark as Resolved</a></li>
+                      <li><a class="dropdown-item" href="javascript:void(0)"><i class="bi bi-person me-2"></i> Reassign</a></li>
+                      <li><a class="dropdown-item" href="javascript:void(0)"><i class="bi bi-flag me-2"></i> Change Priority</a></li>
+                      <li><hr class="dropdown-divider"></li>
+                      <li><a class="dropdown-item text-danger" href="javascript:void(0)"><i class="bi bi-x-circle me-2"></i> Close Ticket</a></li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <div class="row">
+            <div class="col-lg-8">
+              <div class="card mb-4">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                  <h5 class="card-title">Network connectivity issue</h5>
+                  <span class="badge badge-high">High Priority</span>
+                </div>
+                <div class="card-body">
+                  <div class="mb-4">
+                    <div class="ticket-meta mb-3">
+                      <span class="badge bg-warning me-2">In Progress</span>
+                      <span class="text-muted">Created: Mar 15, 2025, 9:45 AM by Mark Johnson</span>
+                    </div>
+                    <p>I'm experiencing intermittent network connectivity issues in the marketing department. The internet connection keeps dropping every 15-20 minutes, which is disrupting our work on the upcoming campaign.</p>
+                    <p>I've already tried restarting my computer and router, but the issue persists. Other team members are experiencing the same problem.</p>
+                    <p>This is becoming urgent as we have a deadline for the campaign materials by the end of the week.</p>
+                  </div>
+                  
+                  <div class="section-divider">
+                    <div class="divider-line"></div>
+                    <div class="divider-text">Ticket Updates</div>
+                    <div class="divider-line"></div>
+                  </div>
+                  
+                  <div class="ticket-updates">
+                    <div class="d-flex mb-4">
+                      <div class="flex-shrink-0">
+                        <div class="avatar" style="width: 40px; height: 40px; overflow: hidden; border-radius: 50%;">
+                          <img src="https://ui-avatars.com/api/?name=Mike+Johnson&background=4361ee&color=fff" alt="Mike" style="width: 100%; height: 100%; object-fit: cover;">
+                        </div>
+                      </div>
+                      <div class="flex-grow-1 ms-3">
+                        <div class="d-flex justify-content-between align-items-center">
+                          <div>
+                            <h6 class="mb-0">Mike Johnson</h6>
+                            <small class="text-muted">IT Support • Mar 15, 10:15 AM</small>
+                          </div>
+                          <div>
+                            <span class="badge bg-primary">Support Response</span>
+                          </div>
+                        </div>
+                        <div class="mt-2">
+                          <p>I've assigned this ticket to myself and will investigate the network issues in the marketing department. I'll check the network switches and access points in your area.</p>
+                          <p>In the meantime, can you let me know how many workstations are affected? And have you noticed any pattern to when the disconnections happen?</p>
+                        </div>
+                      </div>
+                    </div>
+                    
+                    <div class="d-flex mb-4">
+                      <div class="flex-shrink-0">
+                        <div class="avatar" style="width: 40px; height: 40px; overflow: hidden; border-radius: 50%;">
+                          <img src="https://ui-avatars.com/api/?name=Mark+Johnson&background=3498db&color=fff" alt="Mark" style="width: 100%; height: 100%; object-fit: cover;">
+                        </div>
+                      </div>
+                      <div class="flex-grow-1 ms-3">
+                        <div class="d-flex justify-content-between align-items-center">
+                          <div>
+                            <h6 class="mb-0">Mark Johnson</h6>
+                            <small class="text-muted">Marketing • Mar 15, 11:32 AM</small>
+                          </div>
+                          <div>
+                            <span class="badge bg-info">User Update</span>
+                          </div>
+                        </div>
+                        <div class="mt-2">
+                          <p>Thanks for the quick response, Mike. We have about 8 workstations affected in the marketing department. The disconnections seem random but happen more frequently when multiple people are in video calls.</p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <div class="section-divider">
+                    <div class="divider-line"></div>
+                    <div class="divider-text">Add Update</div>
+                    <div class="divider-line"></div>
+                  </div>
+                  
+                  <form id="ticketUpdateForm">
+                    <div class="mb-3">
+                      <textarea class="form-control" rows="3" placeholder="Add a comment or update..."></textarea>
+                    </div>
+                    <div class="mb-3">
+                      <input class="form-control" type="file" id="updateAttachment">
+                    </div>
+                    <div class="d-flex justify-content-between align-items-center">
+                      <div class="form-check">
+                        <input class="form-check-input" type="checkbox" id="notifyUsers">
+                        <label class="form-check-label" for="notifyUsers">
+                          Notify involved users
+                        </label>
+                      </div>
+                      <button type="submit" class="btn btn-primary">
+                        <i class="bi bi-send me-2"></i> Submit Update
+                      </button>
+                    </div>
+                  </form>
+                </div>
+              </div>
+              
+              <div class="card">
+                <div class="card-header">
+                  <h5 class="card-title">Ticket Activity Log</h5>
+                </div>
+                <div class="card-body p-0">
+                  <div class="list-group list-group-flush">
+                    <div class="list-group-item py-3">
+                      <div class="d-flex w-100 justify-content-between">
+                        <h6 class="mb-1">Ticket assigned to Mike Johnson</h6>
+                        <small class="text-muted">10:00 AM</small>
+                      </div>
+                      <small class="text-muted">By Sarah Thompson (IT Manager)</small>
+                    </div>
+                    <div class="list-group-item py-3">
+                      <div class="d-flex w-100 justify-content-between">
+                        <h6 class="mb-1">Ticket status changed to In Progress</h6>
+                        <small class="text-muted">10:05 AM</small>
+                      </div>
+                      <small class="text-muted">By Mike Johnson (IT Support)</small>
+                    </div>
+                    <div class="list-group-item py-3">
+                      <div class="d-flex w-100 justify-content-between">
+                        <h6 class="mb-1">Ticket created</h6>
+                        <small class="text-muted">9:45 AM</small>
+                      </div>
+                      <small class="text-muted">By Mark Johnson (Marketing)</small>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <div class="col-lg-4">
+              <div class="card mb-4">
+                <div class="card-header">
+                  <h5 class="card-title">Ticket Information</h5>
+                </div>
+                <div class="card-body">
+                  <ul class="list-group list-group-flush">
+                    <li class="list-group-item px-0 py-2 d-flex justify-content-between">
+                      <span class="text-muted">Status</span>
+                      <span class="badge bg-warning">In Progress</span>
+                    </li>
+                    <li class="list-group-item px-0 py-2 d-flex justify-content-between">
+                      <span class="text-muted">Priority</span>
+                      <span class="badge badge-high">High</span>
+                    </li>
+                    <li class="list-group-item px-0 py-2 d-flex justify-content-between">
+                      <span class="text-muted">Department</span>
+                      <span>IT</span>
+                    </li>
+                    <li class="list-group-item px-0 py-2 d-flex justify-content-between">
+                      <span class="text-muted">Created By</span>
+                      <span>Mark Johnson</span>
+                    </li>
+                    <li class="list-group-item px-0 py-2 d-flex justify-content-between">
+                      <span class="text-muted">Created Date</span>
+                      <span>Mar 15, 2025</span>
+                    </li>
+                    <li class="list-group-item px-0 py-2 d-flex justify-content-between">
+                      <span class="text-muted">Last Updated</span>
+                      <span>Today, 11:32 AM</span>
+                    </li>
+                    <li class="list-group-item px-0 py-2 d-flex justify-content-between">
+                      <span class="text-muted">Assigned To</span>
+                      <span>Mike Johnson</span>
+                    </li>
+                  </ul>
+                </div>
+              </div>
+              
+              <div class="card mb-4">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                  <h5 class="card-title">Related Tickets</h5>
+                </div>
+                <div class="card-body">
+                  <div class="list-group">
+                    <a href="javascript:void(0)" class="list-group-item list-group-item-action">
+                      <div class="d-flex w-100 justify-content-between">
+                        <h6 class="mb-1">#TK-1020 WiFi signal strength issues</h6>
+                      </div>
+                      <small class="text-muted">Created 3 days ago • IT Department</small>
+                    </a>
+                    <a href="javascript:void(0)" class="list-group-item list-group-item-action">
+                      <div class="d-flex w-100 justify-content-between">
+                        <h6 class="mb-1">#TK-1015 Router configuration</h6>
+                      </div>
+                      <small class="text-muted">Created 5 days ago • IT Department</small>
+                    </a>
+                  </div>
+                </div>
+              </div>
+              
+              <div class="card">
+                <div class="card-header">
+                  <h5 class="card-title">Start Direct Chat</h5>
+                </div>
+                <div class="card-body">
+                  <p class="text-muted small">Start a direct conversation with the assignee to discuss this ticket in real-time.</p>
+                  <a href="javascript:void(0)" class="btn btn-primary w-100" id="startChat">
+                    <i class="bi bi-chat-dots me-2"></i> Chat with Mike Johnson
+                  </a>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- User Management Page (Admin only) -->
+      <div class="page-content user-management">
+        <div class="container-fluid">
+          <div class="row mb-4">
+            <div class="col-12">
+              <div class="d-flex align-items-center justify-content-between">
+                <h1 class="h3">User Management</h1>
+                <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addUserModal">
+                  <i class="bi bi-person-plus me-2"></i> Add User
+                </button>
+              </div>
+            </div>
+          </div>
+          
+          <div class="row">
+            <div class="col-12">
+              <div class="card">
+                <div class="card-header">
+                  <div class="row align-items-center">
+                    <div class="col-md-6">
+                      <h5 class="card-title mb-0">All Users</h5>
+                    </div>
+                    <div class="col-md-6">
+                      <div class="d-flex justify-content-md-end">
+                        <div class="input-group w-md-50">
+                          <input type="text" class="form-control" placeholder="Search users...">
+                          <button class="btn btn-outline-secondary" type="button">
+                            <i class="bi bi-search"></i>
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="card-body p-0">
+                  <div class="table-responsive">
+                    <table class="table table-hover">
+                      <thead>
+                        <tr>
+                          <th>Name</th>
+                          <th>Email</th>
+                          <th>Department</th>
+                          <th>Role</th>
+                          <th>Status</th>
+                          <th>Actions</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr>
+                          <td>
+                            <div class="d-flex align-items-center">
+                              <div class="avatar me-3" style="width: 36px; height: 36px; overflow: hidden; border-radius: 50%;">
+                                <img src="https://ui-avatars.com/api/?name=John+Doe&background=4361ee&color=fff" alt="John Doe" style="width: 100%; height: 100%; object-fit: cover;">
+                              </div>
+                              <div>
+                                <h6 class="mb-0">John Doe</h6>
+                              </div>
+                            </div>
+                          </td>
+                          <td>john.doe@example.com</td>
+                          <td>IT</td>
+                          <td><span class="badge bg-primary">Admin</span></td>
+                          <td><span class="badge bg-success">Active</span></td>
+                          <td>
+                            <div class="dropdown">
+                              <button class="btn btn-sm btn-light" type="button" data-bs-toggle="dropdown">
+                                <i class="bi bi-three-dots"></i>
+                              </button>
+                              <ul class="dropdown-menu">
+                                <li><a class="dropdown-item" href="javascript:void(0)"><i class="bi bi-pencil me-2"></i> Edit</a></li>
+                                <li><a class="dropdown-item" href="javascript:void(0)"><i class="bi bi-key me-2"></i> Reset Password</a></li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li><a class="dropdown-item text-danger" href="javascript:void(0)"><i class="bi bi-trash me-2"></i> Delete</a></li>
+                              </ul>
+                            </div>
+                          </td>
+                        </tr>
+                        <tr>
+                          <td>
+                            <div class="d-flex align-items-center">
+                              <div class="avatar me-3" style="width: 36px; height: 36px; overflow: hidden; border-radius: 50%;">
+                                <img src="https://ui-avatars.com/api/?name=Sarah+Thompson&background=2ecc71&color=fff" alt="Sarah Thompson" style="width: 100%; height: 100%; object-fit: cover;">
+                              </div>
+                              <div>
+                                <h6 class="mb-0">Sarah Thompson</h6>
+                              </div>
+                            </div>
+                          </td>
+                          <td>sarah.t@example.com</td>
+                          <td>IT</td>
+                          <td><span class="badge bg-info">Manager</span></td>
+                          <td><span class="badge bg-success">Active</span></td>
+                          <td>
+                            <div class="dropdown">
+                              <button class="btn btn-sm btn-light" type="button" data-bs-toggle="dropdown">
+                                <i class="bi bi-three-dots"></i>
+                              </button>
+                              <ul class="dropdown-menu">
+                                <li><a class="dropdown-item" href="javascript:void(0)"><i class="bi bi-pencil me-2"></i> Edit</a></li>
+                                <li><a class="dropdown-item" href="javascript:void(0)"><i class="bi bi-key me-2"></i> Reset Password</a></li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li><a class="dropdown-item text-danger" href="javascript:void(0)"><i class="bi bi-trash me-2"></i> Delete</a></li>
+                              </ul>
+                            </div>
+                          </td>
+                        </tr>
+                        <tr>
+                          <td>
+                            <div class="d-flex align-items-center">
+                              <div class="avatar me-3" style="width: 36px; height: 36px; overflow: hidden; border-radius: 50%;">
+                                <img src="https://ui-avatars.com/api/?name=Mike+Johnson&background=3498db&color=fff" alt="Mike Johnson" style="width: 100%; height: 100%; object-fit: cover;">
+                              </div>
+                              <div>
+                                <h6 class="mb-0">Mike Johnson</h6>
+                              </div>
+                            </div>
+                          </td>
+                          <td>mike.j@example.com</td>
+                          <td>IT</td>
+                          <td><span class="badge bg-secondary">User</span></td>
+                          <td><span class="badge bg-success">Active</span></td>
+                          <td>
+                            <div class="dropdown">
+                              <button class="btn btn-sm btn-light" type="button" data-bs-toggle="dropdown">
+                                <i class="bi bi-three-dots"></i>
+                              </button>
+                              <ul class="dropdown-menu">
+                                <li><a class="dropdown-item" href="javascript:void(0)"><i class="bi bi-pencil me-2"></i> Edit</a></li>
+                                <li><a class="dropdown-item" href="javascript:void(0)"><i class="bi bi-key me-2"></i> Reset Password</a></li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li><a class="dropdown-item text-danger" href="javascript:void(0)"><i class="bi bi-trash me-2"></i> Delete</a></li>
+                              </ul>
+                            </div>
+                          </td>
+                        </tr>
+                        <tr>
+                          <td>
+                            <div class="d-flex align-items-center">
+                              <div class="avatar me-3" style="width: 36px; height: 36px; overflow: hidden; border-radius: 50%;">
+                                <img src="https://ui-avatars.com/api/?name=Emily+Chen&background=e74c3c&color=fff" alt="Emily Chen" style="width: 100%; height: 100%; object-fit: cover;">
+                              </div>
+                              <div>
+                                <h6 class="mb-0">Emily Chen</h6>
+                              </div>
+                            </div>
+                          </td>
+                          <td>emily.c@example.com</td>
+                          <td>HR</td>
+                          <td><span class="badge bg-info">Manager</span></td>
+                          <td><span class="badge bg-success">Active</span></td>
+                          <td>
+                            <div class="dropdown">
+                              <button class="btn btn-sm btn-light" type="button" data-bs-toggle="dropdown">
+                                <i class="bi bi-three-dots"></i>
+                              </button>
+                              <ul class="dropdown-menu">
+                                <li><a class="dropdown-item" href="javascript:void(0)"><i class="bi bi-pencil me-2"></i> Edit</a></li>
+                                <li><a class="dropdown-item" href="javascript:void(0)"><i class="bi bi-key me-2"></i> Reset Password</a></li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li><a class="dropdown-item text-danger" href="javascript:void(0)"><i class="bi bi-trash me-2"></i> Delete</a></li>
+                              </ul>
+                            </div>
+                          </td>
+                        </tr>
+                        <tr>
+                          <td>
+                            <div class="d-flex align-items-center">
+                              <div class="avatar me-3" style="width: 36px; height: 36px; overflow: hidden; border-radius: 50%;">
+                                <img src="https://ui-avatars.com/api/?name=Mark+Johnson&background=f39c12&color=fff" alt="Mark Johnson" style="width: 100%; height: 100%; object-fit: cover;">
+                              </div>
+                              <div>
+                                <h6 class="mb-0">Mark Johnson</h6>
+                              </div>
+                            </div>
+                          </td>
+                          <td>mark.j@example.com</td>
+                          <td>Marketing</td>
+                          <td><span class="badge bg-secondary">User</span></td>
+                          <td><span class="badge bg-warning">Inactive</span></td>
+                          <td>
+                            <div class="dropdown">
+                              <button class="btn btn-sm btn-light" type="button" data-bs-toggle="dropdown">
+                                <i class="bi bi-three-dots"></i>
+                              </button>
+                              <ul class="dropdown-menu">
+                                <li><a class="dropdown-item" href="javascript:void(0)"><i class="bi bi-pencil me-2"></i> Edit</a></li>
+                                <li><a class="dropdown-item" href="javascript:void(0)"><i class="bi bi-key me-2"></i> Reset Password</a></li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li><a class="dropdown-item text-danger" href="javascript:void(0)"><i class="bi bi-trash me-2"></i> Delete</a></li>
+                              </ul>
+                            </div>
+                          </td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+                <div class="card-footer">
+                  <nav aria-label="User pagination">
+                    <ul class="pagination justify-content-center justify-content-md-end mb-0">
+                      <li class="page-item disabled">
+                        <a class="page-link" href="javascript:void(0)" tabindex="-1" aria-disabled="true">Previous</a>
+                      </li>
+                      <li class="page-item active"><a class="page-link" href="javascript:void(0)">1</a></li>
+                      <li class="page-item"><a class="page-link" href="javascript:void(0)">2</a></li>
+                      <li class="page-item"><a class="page-link" href="javascript:void(0)">3</a></li>
+                      <li class="page-item">
+                        <a class="page-link" href="javascript:void(0)">Next</a>
+                      </li>
+                    </ul>
+                  </nav>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Department Management Page (Admin only) -->
+      <div class="page-content department-management">
+        <div class="container-fluid">
+          <div class="row mb-4">
+            <div class="col-12">
+              <div class="d-flex align-items-center justify-content-between">
+                <h1 class="h3">Department Management</h1>
+                <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addDepartmentModal">
+                  <i class="bi bi-building-add me-2"></i> Add Department
+                </button>
+              </div>
+            </div>
+          </div>
+          
+          <div class="row">
+            <div class="col-lg-8">
+              <div class="card">
+                <div class="card-header">
+                  <h5 class="card-title">All Departments</h5>
+                </div>
+                <div class="card-body p-0">
+                  <div class="table-responsive">
+                    <table class="table table-hover">
+                      <thead>
+                        <tr>
+                          <th>Department Name</th>
+                          <th>Manager</th>
+                          <th>Team Size</th>
+                          <th>Active Tickets</th>
+                          <th>Actions</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr>
+                          <td>
+                            <div class="d-flex align-items-center">
+                              <div class="avatar me-3 bg-primary d-flex align-items-center justify-content-center" style="width: 36px; height: 36px; border-radius: 8px;">
+                                <i class="bi bi-pc-display text-white"></i>
+                              </div>
+                              <div>
+                                <h6 class="mb-0">Information Technology</h6>
+                              </div>
+                            </div>
+                          </td>
+                          <td>Sarah Thompson</td>
+                          <td>12 members</td>
+                          <td>24 tickets</td>
+                          <td>
+                            <div class="dropdown">
+                              <button class="btn btn-sm btn-light" type="button" data-bs-toggle="dropdown">
+                                <i class="bi bi-three-dots"></i>
+                              </button>
+                              <ul class="dropdown-menu">
+                                <li><a class="dropdown-item" href="javascript:void(0)"><i class="bi bi-pencil me-2"></i> Edit</a></li>
+                                <li><a class="dropdown-item" href="javascript:void(0)"><i class="bi bi-people me-2"></i> Manage Members</a></li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li><a class="dropdown-item text-danger" href="javascript:void(0)"><i class="bi bi-trash me-2"></i> Delete</a></li>
+                              </ul>
+                            </div>
+                          </td>
+                        </tr>
+                        <tr>
+                          <td>
+                            <div class="d-flex align-items-center">
+                              <div class="avatar me-3 bg-success d-flex align-items-center justify-content-center" style="width: 36px; height: 36px; border-radius: 8px;">
+                                <i class="bi bi-people text-white"></i>
+                              </div>
+                              <div>
+                                <h6 class="mb-0">Human Resources</h6>
+                              </div>
+                            </div>
+                          </td>
+                          <td>Emily Chen</td>
+                          <td>8 members</td>
+                          <td>15 tickets</td>
+                          <td>
+                            <div class="dropdown">
+                              <button class="btn btn-sm btn-light" type="button" data-bs-toggle="dropdown">
+                                <i class="bi bi-three-dots"></i>
+                              </button>
+                              <ul class="dropdown-menu">
+                                <li><a class="dropdown-item" href="javascript:void(0)"><i class="bi bi-pencil me-2"></i> Edit</a></li>
+                                <li><a class="dropdown-item" href="javascript:void(0)"><i class="bi bi-people me-2"></i> Manage Members</a></li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li><a class="dropdown-item text-danger" href="javascript:void(0)"><i class="bi bi-trash me-2"></i> Delete</a></li>
+                              </ul>
+                            </div>
+                          </td>
+                        </tr>
+                        <tr>
+                          <td>
+                            <div class="d-flex align-items-center">
+                              <div class="avatar me-3 bg-info d-flex align-items-center justify-content-center" style="width: 36px; height: 36px; border-radius: 8px;">
+                                <i class="bi bi-cash-stack text-white"></i>
+                              </div>
+                              <div>
+                                <h6 class="mb-0">Finance</h6>
+                              </div>
+                            </div>
+                          </td>
+                          <td>Robert Williams</td>
+                          <td>6 members</td>
+                          <td>9 tickets</td>
+                          <td>
+                            <div class="dropdown">
+                              <button class="btn btn-sm btn-light" type="button" data-bs-toggle="dropdown">
+                                <i class="bi bi-three-dots"></i>
+                              </button>
+                              <ul class="dropdown-menu">
+                                <li><a class="dropdown-item" href="javascript:void(0)"><i class="bi bi-pencil me-2"></i> Edit</a></li>
+                                <li><a class="dropdown-item" href="javascript:void(0)"><i class="bi bi-people me-2"></i> Manage Members</a></li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li><a class="dropdown-item text-danger" href="javascript:void(0)"><i class="bi bi-trash me-2"></i> Delete</a></li>
+                              </ul>
+                            </div>
+                          </td>
+                        </tr>
+                        <tr>
+                          <td>
+                            <div class="d-flex align-items-center">
+                              <div class="avatar me-3 bg-warning d-flex align-items-center justify-content-center" style="width: 36px; height: 36px; border-radius: 8px;">
+                                <i class="bi bi-badge-ad text-white"></i>
+                              </div>
+                              <div>
+                                <h6 class="mb-0">Marketing</h6>
+                              </div>
+                            </div>
+                          </td>
+                          <td>Jessica Lee</td>
+                          <td>9 members</td>
+                          <td>18 tickets</td>
+                          <td>
+                            <div class="dropdown">
+                              <button class="btn btn-sm btn-light" type="button" data-bs-toggle="dropdown">
+                                <i class="bi bi-three-dots"></i>
+                              </button>
+                              <ul class="dropdown-menu">
+                                <li><a class="dropdown-item" href="javascript:void(0)"><i class="bi bi-pencil me-2"></i> Edit</a></li>
+                                <li><a class="dropdown-item" href="javascript:void(0)"><i class="bi bi-people me-2"></i> Manage Members</a></li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li><a class="dropdown-item text-danger" href="javascript:void(0)"><i class="bi bi-trash me-2"></i> Delete</a></li>
+                              </ul>
+                            </div>
+                          </td>
+                        </tr>
+                        <tr>
+                          <td>
+                            <div class="d-flex align-items-center">
+                              <div class="avatar me-3 bg-danger d-flex align-items-center justify-content-center" style="width: 36px; height: 36px; border-radius: 8px;">
+                                <i class="bi bi-gear text-white"></i>
+                              </div>
+                              <div>
+                                <h6 class="mb-0">Operations</h6>
+                              </div>
+                            </div>
+                          </td>
+                          <td>Daniel Smith</td>
+                          <td>15 members</td>
+                          <td>22 tickets</td>
+                          <td>
+                            <div class="dropdown">
+                              <button class="btn btn-sm btn-light" type="button" data-bs-toggle="dropdown">
+                                <i class="bi bi-three-dots"></i>
+                              </button>
+                              <ul class="dropdown-menu">
+                                <li><a class="dropdown-item" href="javascript:void(0)"><i class="bi bi-pencil me-2"></i> Edit</a></li>
+                                <li><a class="dropdown-item" href="javascript:void(0)"><i class="bi bi-people me-2"></i> Manage Members</a></li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li><a class="dropdown-item text-danger" href="javascript:void(0)"><i class="bi bi-trash me-2"></i> Delete</a></li>
+                              </ul>
+                            </div>
+                          </td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+                <div class="card-footer">
+                  <nav aria-label="User pagination">
+                    <ul class="pagination justify-content-center justify-content-md-end mb-0">
+                      <li class="page-item disabled">
+                        <a class="page-link" href="javascript:void(0)" tabindex="-1" aria-disabled="true">Previous</a>
+                      </li>
+                      <li class="page-item active"><a class="page-link" href="javascript:void(0)">1</a></li>
+                      <li class="page-item"><a class="page-link" href="javascript:void(0)">2</a></li>
+                      <li class="page-item"><a class="page-link" href="javascript:void(0)">3</a></li>
+                      <li class="page-item">
+                        <a class="page-link" href="javascript:void(0)">Next</a>
+                      </li>
+                    </ul>
+                  </nav>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Chat Page -->
+      <div class="page-content chat-page">
+        <div class="container-fluid">
+          <div class="row mb-4">
+            <div class="col-12">
+              <h1 class="h3">Internal Chat</h1>
+              <p class="text-muted">Connect with team members in real-time to resolve issues faster.</p>
+            </div>
+          </div>
+          
+          <div class="row">
+            <div class="col-lg-4 col-md-5">
+              <div class="card mb-4 mb-md-0">
+                <div class="card-header">
+                  <div class="input-group">
+                    <input type="text" class="form-control" placeholder="Search contacts...">
+                    <button class="btn btn-outline-secondary" type="button">
+                      <i class="bi bi-search"></i>
+                    </button>
+                  </div>
+                </div>
+                <div class="card-body p-0">
+                  <div class="list-group list-group-flush">
+                    <a href="javascript:void(0)" class="list-group-item list-group-item-action active py-3">
+                      <div class="d-flex w-100 align-items-center">
+                        <div class="avatar me-3" style="width: 45px; height: 45px; overflow: hidden; border-radius: 50%;">
+                          <img src="https://ui-avatars.com/api/?name=Mike+Johnson&background=3498db&color=fff" alt="Mike" style="width: 100%; height: 100%; object-fit: cover;">
+                          <div class="avatar-status bg-success"></div>
+                        </div>
+                        <div class="flex-grow-1">
+                          <div class="d-flex justify-content-between">
+                            <h6 class="mb-0">Mike Johnson</h6>
+                            <small class="text-muted">12:45 PM</small>
+                          </div>
+                          <p class="mb-0 text-truncate" style="max-width: 100%;">I'll check the network switches in your area.</p>
+                        </div>
+                      </div>
+                    </a>
+                    <a href="javascript:void(0)" class="list-group-item list-group-item-action py-3">
+                      <div class="d-flex w-100 align-items-center">
+                        <div class="avatar me-3" style="width: 45px; height: 45px; overflow: hidden; border-radius: 50%;">
+                          <img src="https://ui-avatars.com/api/?name=Sarah+Thompson&background=2ecc71&color=fff" alt="Sarah" style="width: 100%; height: 100%; object-fit: cover;">
+                          <div class="avatar-status bg-success"></div>
+                        </div>
+                        <div class="flex-grow-1">
+                          <div class="d-flex justify-content-between">
+                            <h6 class="mb-0">Sarah Thompson</h6>
+                            <small class="text-muted">Yesterday</small>
+                          </div>
+                          <p class="mb-0 text-truncate" style="max-width: 100%;">Let me know if you need any help with the IT tickets.</p>
+                        </div>
+                      </div>
+                    </a>
+                    <a href="javascript:void(0)" class="list-group-item list-group-item-action py-3">
+                      <div class="d-flex w-100 align-items-center">
+                        <div class="avatar me-3" style="width: 45px; height: 45px; overflow: hidden; border-radius: 50%;">
+                          <img src="https://ui-avatars.com/api/?name=Emily+Chen&background=e74c3c&color=fff" alt="Emily" style="width: 100%; height: 100%; object-fit: cover;">
+                          <div class="avatar-status bg-secondary"></div>
+                        </div>
+                        <div class="flex-grow-1">
+                          <div class="d-flex justify-content-between">
+                            <h6 class="mb-0">Emily Chen</h6>
+                            <small class="text-muted">Mar 15</small>
+                          </div>
+                          <p class="mb-0 text-truncate" style="max-width: 100%;">Can you review the new onboarding documents?</p>
+                        </div>
+                      </div>
+                    </a>
+                    <a href="javascript:void(0)" class="list-group-item list-group-item-action py-3">
+                      <div class="d-flex w-100 align-items-center">
+                        <div class="avatar me-3" style="width: 45px; height: 45px; overflow: hidden; border-radius: 50%;">
+                          <img src="https://ui-avatars.com/api/?name=Robert+Williams&background=f39c12&color=fff" alt="Robert" style="width: 100%; height: 100%; object-fit: cover;">
+                          <div class="avatar-status bg-success"></div>
+                        </div>
+                        <div class="flex-grow-1">
+                          <div class="d-flex justify-content-between">
+                            <h6 class="mb-0">Robert Williams</h6>
+                            <small class="text-muted">Mar 14</small>
+                          </div>
+                          <p class="mb-0 text-truncate" style="max-width: 100%;">The finance report is ready for review.</p>
+                        </div>
+                      </div>
+                    </a>
+                    <a href="javascript:void(0)" class="list-group-item list-group-item-action py-3">
+                      <div class="d-flex w-100 align-items-center">
+                        <div class="avatar me-3" style="width: 45px; height: 45px; overflow: hidden; border-radius: 50%;">
+                          <img src="https://ui-avatars.com/api/?name=IT+Support&background=1f3a8a&color=fff" alt="IT Support" style="width: 100%; height: 100%; object-fit: cover;">
+                          <div class="avatar-status bg-success"></div>
+                        </div>
+                        <div class="flex-grow-1">
+                          <div class="d-flex justify-content-between">
+                            <h6 class="mb-0">IT Support</h6>
+                            <small class="text-muted">Mar 12</small>
+                          </div>
+                          <p class="mb-0 text-truncate" style="max-width: 100%;">Your password has been reset successfully.</p>
+                        </div>
+                      </div>
+                    </a>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <div class="col-lg-8 col-md-7">
+              <div class="card">
+                <div class="card-header bg-white">
+                  <div class="d-flex align-items-center">
+                    <div class="avatar me-3" style="width: 45px; height: 45px; overflow: hidden; border-radius: 50%;">
+                      <img src="https://ui-avatars.com/api/?name=Mike+Johnson&background=3498db&color=fff" alt="Mike" style="width: 100%; height: 100%; object-fit: cover;">
+                    </div>
+                    <div>
+                      <h6 class="mb-0">Mike Johnson</h6>
+                      <small class="text-success">Online</small>
+                    </div>
+                    <div class="ms-auto">
+                      <div class="dropdown">
+                        <button class="btn btn-sm btn-light" type="button" data-bs-toggle="dropdown">
+                          <i class="bi bi-three-dots"></i>
+                        </button>
+                        <ul class="dropdown-menu dropdown-menu-end">
+                          <li><a class="dropdown-item" href="javascript:void(0)"><i class="bi bi-search me-2"></i> Search</a></li>
+                          <li><a class="dropdown-item" href="javascript:void(0)"><i class="bi bi-file-earmark me-2"></i> Attachments</a></li>
+                          <li><a class="dropdown-item" href="javascript:void(0)"><i class="bi bi-person me-2"></i> View Profile</a></li>
+                          <li><hr class="dropdown-divider"></li>
+                          <li><a class="dropdown-item text-danger" href="javascript:void(0)"><i class="bi bi-x-circle me-2"></i> Delete Chat</a></li>
+                        </ul>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="card-body p-0">
+                  <div class="chat-container">
+                    <div class="chat-messages p-3">
+                      <div class="text-center mb-3">
+                        <span class="badge bg-light text-secondary">Today, March 16, 2025</span>
+                      </div>
+                      
+                      <div class="chat-message received">
+                        <div class="chat-bubble">
+                          <p class="mb-0">Hi Mark, I've been assigned to your ticket about the network connectivity issues in the marketing department.</p>
+                        </div>
+                        <div class="chat-bubble-meta">Mike Johnson • 9:30 AM</div>
+                      </div>
+                      
+                      <div class="chat-message sent">
+                        <div class="chat-bubble">
+                          <p class="mb-0">Hi Mike, thanks for the quick response! Yes, we're having trouble staying connected to the network, especially during video calls.</p>
+                        </div>
+                        <div class="chat-bubble-meta">9:32 AM</div>
+                      </div>
+                      
+                      <div class="chat-message received">
+                        <div class="chat-bubble">
+                          <p class="mb-0">I'll check the network switches in your area. Can you tell me how many workstations are affected?</p>
+                        </div>
+                        <div class="chat-bubble-meta">Mike Johnson • 9:35 AM</div>
+                      </div>
+                      
+                      <div class="chat-message sent">
+                        <div class="chat-bubble">
+                          <p class="mb-0">About 8 workstations are affected. Everyone in the marketing department is experiencing the same issue.</p>
+                        </div>
+                        <div class="chat-bubble-meta">9:37 AM</div>
+                      </div>
+                      
+                      <div class="chat-message received">
+                        <div class="chat-bubble">
+                          <p class="mb-0">Thanks for the info. I'll come by your department in about 30 minutes to investigate. In the meantime, can you try rebooting the router in your area? It's the black box with the blue lights near Jessica's desk.</p>
+                        </div>
+                        <div class="chat-bubble-meta">Mike Johnson • 9:40 AM</div>
+                      </div>
+                      
+                      <div class="chat-message sent">
+                        <div class="chat-bubble">
+                          <p class="mb-0">Sure, I'll do that right now. Should I just unplug it and plug it back in?</p>
+                        </div>
+                        <div class="chat-bubble-meta">9:42 AM</div>
+                      </div>
+                      
+                      <div class="chat-message received">
+                        <div class="chat-bubble">
+                          <p class="mb-0">Yes, exactly. Unplug it, wait about 30 seconds, then plug it back in. It will take about 2 minutes to fully restart.</p>
+                        </div>
+                        <div class="chat-bubble-meta">Mike Johnson • 9:43 AM</div>
+                      </div>
+                      
+                      <div class="chat-message sent">
+                        <div class="chat-bubble">
+                          <p class="mb-0">Done! I'll let you know if it helps.</p>
+                        </div>
+                        <div class="chat-bubble-meta">9:45 AM</div>
+                      </div>
+                      
+                      <div class="chat-message received">
+                        <div class="chat-bubble">
+                          <p class="mb-0">Perfect. I'll check the network logs from my end as well. Should be there around 10:15.</p>
+                        </div>
+                        <div class="chat-bubble-meta">Mike Johnson • 9:47 AM</div>
+                      </div>
+                      
+                      <div class="text-center my-3">
+                        <span class="badge bg-light text-secondary">Mike is typing...</span>
+                      </div>
+                    </div>
+                    
+                    <div class="chat-input p-3 border-top">
+                      <form>
+                        <div class="input-group">
+                          <button class="btn btn-outline-secondary" type="button">
+                            <i class="bi bi-paperclip"></i>
+                          </button>
+                          <input type="text" class="form-control" placeholder="Type a message...">
+                          <button class="btn btn-primary" type="submit">
+                            <i class="bi bi-send"></i>
+                          </button>
+                        </div>
+                      </form>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Reports Page -->
+      <div class="page-content reports-page">
+        <div class="container-fluid">
+          <div class="row mb-4">
+            <div class="col-12">
+              <h1 class="h3">Reports & Analytics</h1>
+              <p class="text-muted">Generate and download reports about ticket activities and performance.</p>
+            </div>
+          </div>
+          
+          <div class="row">
+            <div class="col-lg-8 col-md-7 order-md-1 order-2">
+              <div class="card mb-4">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                  <h5 class="card-title">Monthly Ticket Summary</h5>
+                  <div>
+                    <button class="btn btn-sm btn-outline-primary me-2">
+                      <i class="bi bi-download"></i> PDF
+                    </button>
+                    <button class="btn btn-sm btn-outline-success">
+                      <i class="bi bi-file-excel"></i> Excel
+                    </button>
+                  </div>
+                </div>
+                <div class="card-body">
+                  <div class="table-responsive">
+                    <table class="table">
+                      <thead>
+                        <tr>
+                          <th>Department</th>
+                          <th>New Tickets</th>
+                          <th>Resolved</th>
+                          <th>Avg Response</th>
+                          <th>Avg Resolution</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr>
+                          <td>IT</td>
+                          <td>78</td>
+                          <td>65</td>
+                          <td>1.8h</td>
+                          <td>8.2h</td>
+                        </tr>
+                        <tr>
+                          <td>HR</td>
+                          <td>45</td>
+                          <td>42</td>
+                          <td>2.3h</td>
+                          <td>9.7h</td>
+                        </tr>
+                        <tr>
+                          <td>Finance</td>
+                          <td>32</td>
+                          <td>28</td>
+                          <td>3.5h</td>
+                          <td>12.4h</td>
+                        </tr>
+                        <tr>
+                          <td>Marketing</td>
+                          <td>51</td>
+                          <td>43</td>
+                          <td>2.1h</td>
+                          <td>10.5h</td>
+                        </tr>
+                        <tr>
+                          <td>Operations</td>
+                          <td>68</td>
+                          <td>59</td>
+                          <td>3.2h</td>
+                          <td>11.8h</td>
+                        </tr>
+                      </tbody>
+                      <tfoot>
+                        <tr class="table-light">
+                          <th>Total</th>
+                          <th>274</th>
+                          <th>237</th>
+                          <th>2.6h</th>
+                          <th>10.5h</th>
+                        </tr>
+                      </tfoot>
+                    </table>
+                  </div>
+                </div>
+              </div>
+              
+              <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                  <h5 class="card-title">Top Ticket Categories</h5>
+                  <div>
+                    <button class="btn btn-sm btn-outline-primary me-2">
+                      <i class="bi bi-download"></i> PDF
+                    </button>
+                    <button class="btn btn-sm btn-outline-success">
+                      <i class="bi bi-file-excel"></i> Excel
+                    </button>
+                  </div>
+                </div>
+                <div class="card-body">
+                  <div class="table-responsive">
+                    <table class="table">
+                      <thead>
+                        <tr>
+                          <th>Category</th>
+                          <th>Count</th>
+                          <th>% of Total</th>
+                          <th>Avg Resolution</th>
+                          <th>Trend</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr>
+                          <td>Network Issues</td>
+                          <td>42</td>
+                          <td>15.3%</td>
+                          <td>6.8h</td>
+                          <td><span class="text-danger"><i class="bi bi-arrow-up"></i> 12%</span></td>
+                        </tr>
+                        <tr>
+                          <td>Software Installation</td>
+                          <td>37</td>
+                          <td>13.5%</td>
+                          <td>4.2h</td>
+                          <td><span class="text-success"><i class="bi bi-arrow-down"></i> 5%</span></td>
+                        </tr>
+                        <tr>
+                          <td>Password Reset</td>
+                          <td>35</td>
+                          <td>12.8%</td>
+                          <td>1.3h</td>
+                          <td><span class="text-success"><i class="bi bi-arrow-down"></i> 18%</span></td>
+                        </tr>
+                        <tr>
+                          <td>Hardware Issues</td>
+                          <td>29</td>
+                          <td>10.6%</td>
+                          <td>9.5h</td>
+                          <td><span class="text-danger"><i class="bi bi-arrow-up"></i> 8%</span></td>
+                        </tr>
+                        <tr>
+                          <td>Account Access</td>
+                          <td>25</td>
+                          <td>9.1%</td>
+                          <td>3.6h</td>
+                          <td><span class="text-secondary"><i class="bi bi-dash"></i> 0%</span></td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <div class="col-lg-4 col-md-5 order-md-2 order-1 mb-4 mb-md-0">
+              <div class="card mb-4">
+                <div class="card-header">
+                  <h5 class="card-title">Generate Custom Report</h5>
+                </div>
+                <div class="card-body">
+                  <form id="reportForm">
+                    <div class="mb-3">
+                      <label for="reportType" class="form-label">Report Type</label>
+                      <select class="form-select" id="reportType" required>
+                        <option value="" selected disabled>Select Report Type</option>
+                        <option value="department">Department Report</option>
+                        <option value="user">User Report</option>
+                        <option value="priority">Ticket Priority Report</option>
+                        <option value="status">Ticket Status Report</option>
+                        <option value="performance">Performance Report</option>
+                      </select>
+                    </div>
+                    
+                    <div class="mb-3">
+                      <label for="reportDateRange" class="form-label">Time Period</label>
+                      <select class="form-select" id="reportDateRange" required>
+                        <option value="current_month">Current Month</option>
+                        <option value="last_month">Last Month</option>
+                        <option value="last_3_months">Last 3 Months</option>
+                        <option value="last_6_months">Last 6 Months</option>
+                        <option value="year_to_date">Year to Date</option>
+                        <option value="custom">Custom Range</option>
+                      </select>
+                    </div>
+                    
+                    <div class="mb-3 date-range d-none">
+                      <label class="form-label">Custom Date Range</label>
+                      <div class="row">
+                        <div class="col-6">
+                          <input type="date" class="form-control" placeholder="Start Date">
+                        </div>
+                        <div class="col-6">
+                          <input type="date" class="form-control" placeholder="End Date">
+                        </div>
+                      </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                      <label for="reportFormat" class="form-label">Report Format</label>
+                      <select class="form-select" id="reportFormat" required>
+                        <option value="pdf">PDF</option>
+                        <option value="excel">Excel</option>
+                        <option value="csv">CSV</option>
+                      </select>
+                    </div>
+                    
+                    <div class="mb-3 form-check">
+                      <input type="checkbox" class="form-check-input" id="includeCharts" checked>
+                      <label class="form-check-label" for="includeCharts">Include charts and graphs</label>
+                    </div>
+                    
+                    <div class="d-grid">
+                      <button type="submit" class="btn btn-primary">
+                        <i class="bi bi-file-earmark-text me-2"></i> Generate Report
+                      </button>
+                    </div>
+                  </form>
+                </div>
+              </div>
+              
+              <div class="card">
+                <div class="card-header">
+                  <h5 class="card-title">Saved Reports</h5>
+                </div>
+                <div class="card-body p-0">
+                  <div class="list-group list-group-flush">
+                    <a href="javascript:void(0)" class="list-group-item list-group-item-action py-3">
+                      <div class="d-flex w-100 justify-content-between">
+                        <h6 class="mb-1">IT Department - March 2025</h6>
+                        <small><i class="bi bi-file-pdf text-danger"></i></small>
+                      </div>
+                      <small class="text-muted">Generated on Mar 15, 2025</small>
+                    </a>
+                    <a href="javascript:void(0)" class="list-group-item list-group-item-action py-3">
+                      <div class="d-flex w-100 justify-content-between">
+                        <h6 class="mb-1">User Performance - Q1 2025</h6>
+                        <small><i class="bi bi-file-excel text-success"></i></small>
+                      </div>
+                      <small class="text-muted">Generated on Mar 10, 2025</small>
+                    </a>
+                    <a href="javascript:void(0)" class="list-group-item list-group-item-action py-3">
+                      <div class="d-flex w-100 justify-content-between">
+                        <h6 class="mb-1">Ticket Priority Analysis</h6>
+                        <small><i class="bi bi-file-pdf text-danger"></i></small>
+                      </div>
+                      <small class="text-muted">Generated on Mar 5, 2025</small>
+                    </a>
+                    <a href="javascript:void(0)" class="list-group-item list-group-item-action py-3">
+                      <div class="d-flex w-100 justify-content-between">
+                        <h6 class="mb-1">Monthly Department Summary</h6>
+                        <small><i class="bi bi-file-excel text-success"></i></small>
+                      </div>
+                      <small class="text-muted">Generated on Feb 28, 2025</small>
+                    </a>
+                    <a href="javascript:void(0)" class="list-group-item list-group-item-action py-3">
+                      <div class="d-flex w-100 justify-content-between">
+                        <h6 class="mb-1">Resolution Time Trends</h6>
+                        <small><i class="bi bi-file-pdf text-danger"></i></small>
+                      </div>
+                      <small class="text-muted">Generated on Feb 15, 2025</small>
+                    </a>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Settings Page (Admin Only) -->
+      <div class="page-content settings-page">
+        <div class="container-fluid">
+          <div class="row mb-4">
+            <div class="col-12">
+              <h1 class="h3">System Settings</h1>
+              <p class="text-muted">Configure system-wide settings and security parameters.</p>
+            </div>
+          </div>
+          
+          <div class="row">
+            <div class="col-lg-3">
+              <div class="card mb-4 mb-lg-0">
+                <div class="card-body p-0">
+                  <div class="list-group list-group-flush">
+                    <a href="javascript:void(0)" class="list-group-item list-group-item-action active">
+                      <i class="bi bi-gear me-2"></i> General Settings
+                    </a>
+                    <a href="javascript:void(0)" class="list-group-item list-group-item-action">
+                      <i class="bi bi-shield-lock me-2"></i> Security Settings
+                    </a>
+                    <a href="javascript:void(0)" class="list-group-item list-group-item-action">
+                      <i class="bi bi-envelope me-2"></i> Notification Settings
+                    </a>
+                    <a href="javascript:void(0)" class="list-group-item list-group-item-action">
+                      <i class="bi bi-ticket me-2"></i> Ticket Settings
+                    </a>
+                    <a href="javascript:void(0)" class="list-group-item list-group-item-action">
+                      <i class="bi bi-database me-2"></i> Backup & Restore
+                    </a>
+                    <a href="javascript:void(0)" class="list-group-item list-group-item-action">
+                      <i class="bi bi-layout-text-window me-2"></i> System Logs
+                    </a>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <div class="col-lg-9">
+              <div class="card">
+                <div class="card-header">
+                  <h5 class="card-title">General Settings</h5>
+                </div>
+                <div class="card-body">
+                  <form>
+                    <div class="mb-4">
+                      <h6 class="fw-bold">Company Information</h6>
+                      <div class="row g-3">
+                        <div class="col-md-6">
+                          <label for="companyName" class="form-label">Company Name</label>
+                          <input type="text" class="form-control" id="companyName" value="Acme Corporation">
+                        </div>
+                        <div class="col-md-6">
+                          <label for="adminEmail" class="form-label">Admin Email</label>
+                          <input type="email" class="form-control" id="adminEmail" value="admin@acmecorp.com">
+                        </div>
+                        <div class="col-md-12">
+                          <label for="companyLogo" class="form-label">Company Logo</label>
+                          <input type="file" class="form-control" id="companyLogo">
+                          <div class="form-text">Recommended size: 200x50px, PNG or SVG format</div>
+                        </div>
+                      </div>
+                    </div>
+                    
+                    <div class="mb-4">
+                      <h6 class="fw-bold">System Appearance</h6>
+                      <div class="row g-3">
+                        <div class="col-md-6">
+                          <label for="primaryColor" class="form-label">Primary Color</label>
+                          <input type="color" class="form-control form-control-color w-100" id="primaryColor" value="#1f3a8a">
+                        </div>
+                        <div class="col-md-6">
+                          <label for="secondaryColor" class="form-label">Secondary Color</label>
+                          <input type="color" class="form-control form-control-color w-100" id="secondaryColor" value="#4361ee">
+                        </div>
+                        <div class="col-md-6">
+                          <label for="uiTheme" class="form-label">UI Theme</label>
+                          <select class="form-select" id="uiTheme">
+                            <option value="light" selected>Light Mode</option>
+                            <option value="dark">Dark Mode</option>
+                            <option value="auto">Auto (Follow System)</option>
+                          </select>
+                        </div>
+                        <div class="col-md-6">
+                          <label for="dateFormat" class="form-label">Date Format</label>
+                          <select class="form-select" id="dateFormat">
+                            <option value="mm/dd/yyyy">MM/DD/YYYY</option>
+                            <option value="dd/mm/yyyy">DD/MM/YYYY</option>
+                            <option value="yyyy-mm-dd" selected>YYYY-MM-DD</option>
+                          </select>
+                        </div>
+                      </div>
+                    </div>
+                    
+                    <div class="mb-4">
+                      <h6 class="fw-bold">Ticket Configuration</h6>
+                      <div class="row g-3">
+                        <div class="col-md-6">
+                          <label for="ticketPrefix" class="form-label">Ticket ID Prefix</label>
+                          <input type="text" class="form-control" id="ticketPrefix" value="TK-">
+                        </div>
+                        <div class="col-md-6">
+                          <label for="defaultPriority" class="form-label">Default Priority</label>
+                          <select class="form-select" id="defaultPriority">
+                            <option value="low">Low</option>
+                            <option value="medium" selected>Medium</option>
+                            <option value="high">High</option>
+                            <option value="urgent">Urgent</option>
+                          </select>
+                        </div>
+                        <div class="col-12">
+                          <div class="form-check form-switch">
+                            <input class="form-check-input" type="checkbox" id="autoAssignTickets" checked>
+                            <label class="form-check-label" for="autoAssignTickets">Auto-assign tickets to department managers</label>
+                          </div>
+                        </div>
+                        <div class="col-12">
+                          <div class="form-check form-switch">
+                            <input class="form-check-input" type="checkbox" id="allowPublicTickets">
+                            <label class="form-check-label" for="allowPublicTickets">Allow ticket creation without login</label>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    
+                    <div class="text-end">
+                      <button type="button" class="btn btn-light me-2">Reset to Default</button>
+                      <button type="submit" class="btn btn-primary">Save Changes</button>
+                    </div>
+                  </form>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modals -->
+  <!-- Add User Modal -->
+  <div class="modal fade" id="addUserModal" tabindex="-1" aria-labelledby="addUserModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="addUserModalLabel">Add New User</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <form id="addUserForm">
+            <div class="row g-3">
+              <div class="col-md-6">
+                <label for="newUserName" class="form-label">Full Name</label>
+                <input type="text" class="form-control" id="newUserName" required>
+              </div>
+              <div class="col-md-6">
+                <label for="newUserEmail" class="form-label">Email</label>
+                <input type="email" class="form-control" id="newUserEmail" required>
+              </div>
+              <div class="col-md-6">
+                <label for="newUserUsername" class="form-label">Username</label>
+                <input type="text" class="form-control" id="newUserUsername" required>
+              </div>
+              <div class="col-md-6">
+                <label for="newUserDepartment" class="form-label">Department</label>
+                <select class="form-select" id="newUserDepartment" required>
+                  <option value="" disabled selected>Select Department</option>
+                  <option value="it">IT</option>
+                  <option value="hr">Human Resources</option>
+                  <option value="finance">Finance</option>
+                  <option value="marketing">Marketing</option>
+                  <option value="operations">Operations</option>
+                </select>
+              </div>
+              <div class="col-md-6">
+                <label for="newUserRole" class="form-label">Role</label>
+                <select class="form-select" id="newUserRole" required>
+                  <option value="" disabled selected>Select Role</option>
+                  <option value="admin">Administrator</option>
+                  <option value="manager">Manager</option>
+                  <option value="user">Regular User</option>
+                </select>
+              </div>
+              <div class="col-md-6">
+                <label for="newUserPassword" class="form-label">Temporary Password</label>
+                <div class="input-group">
+                  <input type="password" class="form-control" id="newUserPassword" required>
+                  <button class="btn btn-outline-secondary" type="button">
+                    <i class="bi bi-eye"></i>
+                  </button>
+                </div>
+              </div>
+              <div class="col-12">
+                <div class="form-check">
+                  <input class="form-check-input" type="checkbox" id="sendWelcomeEmail" checked>
+                  <label class="form-check-label" for="sendWelcomeEmail">
+                    Send welcome email with login details
+                  </label>
+                </div>
+              </div>
+              <div class="col-12">
+                <div class="form-check">
+                  <input class="form-check-input" type="checkbox" id="requirePasswordChange" checked>
+                  <label class="form-check-label" for="requirePasswordChange">
+                    Require password change on first login
+                  </label>
+                </div>
+              </div>
+            </div>
+          </form>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-light" data-bs-dismiss="modal">Cancel</button>
+          <button type="button" class="btn btn-primary">Add User</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Add Department Modal -->
+  <div class="modal fade" id="addDepartmentModal" tabindex="-1" aria-labelledby="addDepartmentModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="addDepartmentModalLabel">Add New Department</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <form id="addDepartmentForm">
+            <div class="mb-3">
+              <label for="departmentName" class="form-label">Department Name</label>
+              <input type="text" class="form-control" id="departmentName" required>
+            </div>
+            <div class="mb-3">
+              <label for="departmentDescription" class="form-label">Description</label>
+              <textarea class="form-control" id="departmentDescription" rows="3"></textarea>
+            </div>
+            <div class="mb-3">
+              <label for="departmentManager" class="form-label">Department Manager</label>
+              <select class="form-select" id="departmentManager">
+                <option value="" selected>Select Manager</option>
+                <option value="sarah">Sarah Thompson</option>
+                <option value="emily">Emily Chen</option>
+                <option value="robert">Robert Williams</option>
+                <option value="daniel">Daniel Smith</option>
+                <option value="jessica">Jessica Lee</option>
+              </select>
+            </div>
+            <div class="mb-3">
+              <label for="departmentParent" class="form-label">Parent Department (Optional)</label>
+              <select class="form-select" id="departmentParent">
+                <option value="" selected>None (Top Level)</option>
+                <option value="it">Information Technology</option>
+                <option value="hr">Human Resources</option>
+                <option value="finance">Finance</option>
+                <option value="marketing">Marketing</option>
+                <option value="operations">Operations</option>
+              </select>
+            </div>
+            <div class="mb-3 form-check">
+              <input type="checkbox" class="form-check-input" id="departmentActive" checked>
+              <label class="form-check-label" for="departmentActive">Active</label>
+            </div>
+          </form>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-light" data-bs-dismiss="modal">Cancel</button>
+          <button type="button" class="btn btn-primary">Add Department</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Scripts -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
+  <script id="app-script">
+    document.addEventListener('DOMContentLoaded', function() {
+      // Sidebar toggle functionality
+      const sidebarToggle = document.getElementById('sidebarToggle');
+      const sidebar = document.getElementById('sidebar');
+      const mainContent = document.getElementById('main-content');
+      const topbar = document.querySelector('.topbar');
+      
+      if (sidebarToggle) {
+        sidebarToggle.addEventListener('click', function() {
+          sidebar.classList.toggle('show');
+        });
+      }
+      
+      // Handle navigation
+      const pages = {
+        'nav-dashboard': showDashboard,
+        'nav-tickets': showTickets,
+        'nav-new-ticket': showNewTicket,
+        'nav-chat': showChat,
+        'nav-users': showUsers,
+        'nav-departments': showDepartments,
+        'nav-reports': showReports,
+        'nav-settings': showSettings,
+        'nav-logout': logout,
+        'menu-logout': logout,
+        'quick-new-ticket': showNewTicket,
+        'quick-actions-new-ticket': showNewTicket,
+        'back-to-dashboard': showDashboard,
+        'back-to-tickets': showTickets
+      };
+      
+      // Add click event listeners to navigation items
+      Object.keys(pages).forEach(id => {
+        const element = document.getElementById(id);
+        if (element) {
+          element.addEventListener('click', pages[id]);
+        }
+      });
+      
+      // Form submissions
+      const loginForm = document.getElementById('loginForm');
+      if (loginForm) {
+        loginForm.addEventListener('submit', function(e) {
+          e.preventDefault();
+          simulateLogin();
+        });
+      }
+      
+      const registerForm = document.getElementById('registerForm');
+      if (registerForm) {
+        registerForm.addEventListener('submit', function(e) {
+          e.preventDefault();
+          showNotification('Account created successfully! You can now log in.', 'success');
+          // Switch to login tab
+          const loginTab = document.getElementById('login-tab');
+          if (loginTab) {
+            const tabInstance = new bootstrap.Tab(loginTab);
+            tabInstance.show();
+          }
+        });
+      }
+      
+      // Replace the simulateLogin() function to use UserAuthAPI Loop
+      function simulateLogin() {
+        const username = document.getElementById('loginUsername').value;
+        const password = document.getElementById('loginPassword').value;
+        
+        if (!username || !password) {
+          showNotification('Please enter your username and password', 'error');
+          return;
+        }
+        
+        // Call UserAuthAPI Loop
+        fetch('https://magicloops.dev/api/loop/3bf8430c-922e-4861-aac1-2fe7846c3baf/run', {
+          method: 'POST',
+          body: JSON.stringify({ "username": username, "password": password }),
+        }).then(response => response.json())
+          .then(data => {
+            // For simplicity, assume successful auth if data.token exists.
+            if (data.token) {
+              document.querySelector('.auth-page').style.display = 'none';
+              document.querySelector('.app-container').style.display = 'block';
+              showDashboard();
+              showNotification('Logged in successfully!', 'success');
+              // Optionally: store data.token in localStorage/sessionStorage
+            } else {
+              showNotification('Invalid credentials', 'error');
+            }
+          }).catch(err => {
+            showNotification('Login request failed', 'error');
+          });
+      }
+      
+      // Update newTicketForm submission to call TicketAPI Loop.
+      const newTicketForm = document.getElementById('newTicketForm');
+      if (newTicketForm) {
+        newTicketForm.addEventListener('submit', function(e) {
+          e.preventDefault();
+          
+          // Gather ticket data from the form
+          const subject = document.getElementById('ticketSubject').value;
+          const department = document.getElementById('ticketDepartment').value;
+          const assignee = document.getElementById('ticketAssignee').value || "mgr123"; // default if none selected
+          const priority = document.querySelector('input[name="ticketPriority"]:checked').value;
+          const description = document.getElementById('ticketDescription').value;
+          // Creator ID will be assumed from user info, here using dummy id "abc123"
+          
+          // Construct ticket payload as defined in TicketAPI example.
+          const payload = {
+            "creatorId": "abc123",      // In production, use authenticated user id
+            "department": department,
+            "priority": priority,
+            "assigneeId": assignee,
+            "title": subject,
+            "description": description
+          };
+          
+          // Call TicketAPI Loop
+          fetch('https://magicloops.dev/api/loop/44dae4ae-d420-4b9f-a5cf-8db920ca7c69/run', {
+            method: 'POST',
+            body: JSON.stringify(payload)
+          }).then(response => response.json())
+            .then(data => {
+              // Show sample output note from Loop
+              showNotification('Ticket submitted. (Loop test run)', 'success');
+              showDashboard();
+            }).catch(err => {
+              showNotification('Ticket submission failed', 'error');
+            });
+        });
+      }
+      
+      // Update reportForm submission to call TicketReportAPI Loop.
+      const reportForm = document.getElementById('reportForm');
+      if (reportForm) {
+        reportForm.addEventListener('submit', function(e) {
+          e.preventDefault();
+          
+          // Gather report parameters from the form
+          const reportType = document.getElementById('reportType').value;
+          const reportFormat = document.getElementById('reportFormat').value;
+          // For this demo, assume reportType "department" then filterValue "IT Support"
+          const payload = {
+            "filterType": "department",
+            "filterValue": "IT Support",  // Adjust per actual UI inputs if available
+            "reportFormat": reportFormat.toUpperCase()  // e.g., PDF, EXCEL, etc.
+          };
+          
+          // Call TicketReportAPI Loop
+          fetch('https://magicloops.dev/api/loop/07e48767-2fc4-4a44-8680-f554793f4118/run', {
+            method: 'POST',
+            body: JSON.stringify(payload)
+          }).then(response => response.json())
+            .then(data => {
+              // Assuming data.reportUrl is returned.
+              showNotification('Report generated. Download here: ' + data.reportUrl, 'success');
+            }).catch(err => {
+              showNotification('Report generation failed', 'error');
+            });
+        });
+      }
+      
+      // Optionally, if chat messages sent in chat-page are to call ChatAPI, update the chat form submission.
+      const chatForm = document.querySelector('.chat-input form');
+      if (chatForm) {
+        chatForm.addEventListener('submit', function(e) {
+          e.preventDefault();
+          
+          const messageInput = chatForm.querySelector('input[type="text"]');
+          const message = messageInput.value;
+          if (!message) return;
+          
+          // For demonstration, assume senderId is "abc123" and receiverId "mgr123", and a current timestamp.
+          const payload = {
+            "senderId": "abc123",
+            "receiverId": "mgr123",
+            "message": message,
+            "timestamp": new Date().toISOString()
+          };
+          
+          // Call ChatAPI Loop
+          fetch('https://magicloops.dev/api/loop/ece9a2d3-4b2f-47c0-ab77-81b9d7c7526d/run', {
+            method: 'POST',
+            body: JSON.stringify(payload)
+          }).then(response => response.json())
+            .then(data => {
+              // Append new chat message to chat window (not implemented in detail)
+              showNotification('Message sent', 'success');
+              messageInput.value = '';
+            }).catch(err => {
+              showNotification('Failed to send chat message', 'error');
+            });
+        });
+      }
+      
+      // Fake API endpoints (for other parts of the demo) remain available if needed
+      window.apiEndpoints = {
+        login: function(credentials) {
+          return {
+            success: true,
+            user: {
+              id: 1,
+              name: 'John Doe',
+              email: 'john.doe@example.com',
+              role: 'admin',
+              department: 'IT'
+            }
+          };
+        },
+        getDashboard: function() {
+          return {
+            success: true,
+            dashboard: 'admin'
+          };
+        }
+      };
+      
+      // Helper functions
+      function hideAllPages() {
+        document.querySelectorAll('.page-content').forEach(page => {
+          page.style.display = 'none';
+        });
+        
+        // Also reset active state on sidebar
+        document.querySelectorAll('.sidebar-menu-item').forEach(item => {
+          item.classList.remove('active');
+        });
+      }
+      
+      function showNotification(message, type = 'info') {
+        Toastify({
+          text: message,
+          duration: 3000,
+          close: true,
+          gravity: "top",
+          position: "right",
+          backgroundColor: type === 'success' ? "#2ecc71" : type === 'error' ? "#e74c3c" : "#3498db",
+          stopOnFocus: true
+        }).showToast();
+      }
+      
+      function showDashboard() {
+        hideAllPages();
+        
+        // Simulate API call to determine dashboard type
+        const dashboardResponse = window.apiEndpoints.getDashboard();
+        const dashboardType = dashboardResponse.dashboard || 'admin';
+        
+        document.querySelector(`.dashboard-${dashboardType}`).style.display = 'block';
+        document.getElementById('nav-dashboard').classList.add('active');
+        
+        // Update topbar title
+        document.querySelector('.topbar h4').textContent = 'Dashboard';
+      }
+      
+      function showTickets() {
+        hideAllPages();
+        document.querySelector('.dashboard-admin').style.display = 'block';
+        document.getElementById('nav-tickets').classList.add('active');
+        
+        // Update topbar title
+        document.querySelector('.topbar h4').textContent = 'Tickets';
+      }
+      
+      function showNewTicket() {
+        hideAllPages();
+        document.querySelector('.new-ticket').style.display = 'block';
+        document.getElementById('nav-new-ticket').classList.add('active');
+        
+        // Update topbar title
+        document.querySelector('.topbar h4').textContent = 'Create New Ticket';
+      }
+      
+      function showChat() {
+        hideAllPages();
+        document.querySelector('.chat-page').style.display = 'block';
+        document.getElementById('nav-chat').classList.add('active');
+        
+        // Update topbar title
+        document.querySelector('.topbar h4').textContent = 'Internal Chat';
+      }
+      
+      function showUsers() {
+        hideAllPages();
+        document.querySelector('.user-management').style.display = 'block';
+        document.getElementById('nav-users').classList.add('active');
+        
+        // Update topbar title
+        document.querySelector('.topbar h4').textContent = 'User Management';
+      }
+      
+      function showDepartments() {
+        hideAllPages();
+        document.querySelector('.department-management').style.display = 'block';
+        document.getElementById('nav-departments').classList.add('active');
+        
+        // Update topbar title
+        document.querySelector('.topbar h4').textContent = 'Department Management';
+      }
+      
+      function showReports() {
+        hideAllPages();
+        document.querySelector('.reports-page').style.display = 'block';
+        document.getElementById('nav-reports').classList.add('active');
+        
+        // Update topbar title
+        document.querySelector('.topbar h4').textContent = 'Reports & Analytics';
+      }
+      
+      function showSettings() {
+        hideAllPages();
+        document.querySelector('.settings-page').style.display = 'block';
+        document.getElementById('nav-settings').classList.add('active');
+        
+        // Update topbar title
+        document.querySelector('.topbar h4').textContent = 'System Settings';
+      }
+      
+      function logout() {
+        document.querySelector('.app-container').style.display = 'none';
+        document.querySelector('.auth-page').style.display = 'flex';
+        
+        // Clear form fields
+        document.getElementById('loginUsername').value = '';
+        document.getElementById('loginPassword').value = '';
+        
+        showNotification('Logged out successfully', 'info');
+      }
+      
+      // Initialize the app
+      function initApp() {
+        // Hide the application container initially
+        document.querySelector('.app-container').style.display = 'none';
+        
+        // Show only the login page
+        document.querySelector('.auth-page').style.display = 'flex';
+        
+        // Set up report date range change handler
+        const reportDateRange = document.getElementById('reportDateRange');
+        if (reportDateRange) {
+          reportDateRange.addEventListener('change', function() {
+            const dateRangeFields = document.querySelector('.date-range');
+            if (this.value === 'custom') {
+              dateRangeFields.classList.remove('d-none');
+            } else {
+              dateRangeFields.classList.add('d-none');
+            }
+          });
+        }
+        
+        // Dynamic department change handler for new ticket
+        const ticketDepartment = document.getElementById('ticketDepartment');
+        const ticketAssignee = document.getElementById('ticketAssignee');
+        
+        if (ticketDepartment && ticketAssignee) {
+          ticketDepartment.addEventListener('change', function() {
+            // Simulate loading assignees for the selected department
+            ticketAssignee.innerHTML = '<option value="">Department Manager</option>';
+            
+            if (this.value === 'it') {
+              ticketAssignee.innerHTML += `
+                <option value="mike">Mike Johnson</option>
+                <option value="lisa">Lisa Chen</option>
+                <option value="david">David Kim</option>
+              `;
+            } else if (this.value === 'hr') {
+              ticketAssignee.innerHTML += `
+                <option value="emily">Emily Chen</option>
+                <option value="james">James Wilson</option>
+              `;
+            } else if (this.value === 'finance') {
+              ticketAssignee.innerHTML += `
+                <option value="robert">Robert Williams</option>
+                <option value="amelia">Amelia Brown</option>
+              `;
+            } else if (this.value === 'marketing') {
+              ticketAssignee.innerHTML += `
+                <option value="jessica">Jessica Lee</option>
+                <option value="michael">Michael Taylor</option>
+              `;
+            } else if (this.value === 'operations') {
+              ticketAssignee.innerHTML += `
+                <option value="daniel">Daniel Smith</option>
+                <option value="sophia">Sophia Garcia</option>
+              `;
+            }
+          });
+        }
+      }
+      
+      // Start the application
+      initApp();
+    });
+  </script>
+</body>
+</html>
