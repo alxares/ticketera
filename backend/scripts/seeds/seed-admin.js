@@ -1,7 +1,7 @@
 // scripts/create-admin.js
 import bcrypt from "bcryptjs";
 import dotenv from "dotenv";
-import prisma from "../src/config/database.js";
+import prisma from "../../src/config/database.js";
 
 dotenv.config();
 

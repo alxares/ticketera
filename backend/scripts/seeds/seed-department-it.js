@@ -1,5 +1,5 @@
 // scripts/create-it-department.js
-import prisma from "../src/config/database.js";
+import prisma from "../../src/config/database.js";
 
 async function createITDepartment() {
   try {
