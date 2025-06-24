@@ -53,8 +53,32 @@ export const updateTicket = async (id, data) => {
   return res.data;
 };
 
-// ✅ Eliminar ticket (si aplicás esto)
+// ✅ Eliminar ticket (si aplica)
 export const deleteTicket = async (id) => {
   const res = await axiosAuth.delete(`/tickets/${id}`);
   return res.data;
 };
+
+// 📊 Obtener estadísticas de tickets
+export const getStats = async () => {
+  const tickets = await getAllTickets();
+  return {
+    total:    tickets.length,
+    resolved: tickets.filter(t => t.status === 'Resolved').length,
+    pending:  tickets.filter(t => t.status === 'Pending').length,
+    urgent:   tickets.filter(t => t.priority === 'Urgent').length,
+  };
+};
+
+// Guardar el objeto en una variable antes de exportar
+const ticketService = {
+  createTicket,
+  getAllTickets,
+  getUserTickets,
+  getTicketById,
+  updateTicket,
+  deleteTicket,
+  getStats,
+};
+
+export default ticketService;

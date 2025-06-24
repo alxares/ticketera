@@ -1,7 +1,8 @@
+// src/components/Users/UserManagement.js
 import React, { useState, useEffect } from "react";
 import Layout from "../Layout/Layout";
 import Modal from "../Common/Modal";
-import { getAllUsers } from "../../services/userService";
+import { getAllUsers, createUser, deleteUser } from "../../services/userService";
 import { getAllDepartments } from "../../services/departmentService";
 
 const UserManagement = () => {
@@ -19,72 +20,70 @@ const UserManagement = () => {
     email: "",
     role: "USER",
     departmentId: "",
+    password: "",
+    confirmPassword: "",
   });
 
-  // 🔄 Obtener usuarios y departamentos al cargar
+  // Carga inicial de usuarios y departamentos
   useEffect(() => {
-    const fetchData = async () => {
+    (async () => {
       try {
-        const usersData = await getAllUsers();
-        const deptsData = await getAllDepartments();
+        const [usersData, deptsData] = await Promise.all([
+          getAllUsers(),
+          getAllDepartments(),
+        ]);
         setUsers(usersData);
         setDepartments(deptsData);
-      } catch (error) {
-        console.error("❌ Error al cargar usuarios o departamentos", error);
+      } catch (err) {
+        console.error("Error al cargar datos:", err);
       }
-    };
-
-    fetchData();
+    })();
   }, []);
 
-  // ➕ Agregar usuario (temporalmente simulado)
-  const handleAdd = () => {
-    if (!newUser.fullName || !newUser.email || !newUser.departmentId) return;
-
-    const dept = departments.find((d) => d.id === newUser.departmentId);
-
-    setUsers([
-      ...users,
-      {
-        ...newUser,
-        id: users.length + 1,
-        department: dept,
-      },
-    ]);
-
-    setNewUser({
-      fullName: "",
-      email: "",
-      role: "USER",
-      departmentId: "",
-    });
-
-    setShowModal(false);
+  // Crear nuevo usuario con contraseña
+  const handleAdd = async () => {
+    if (!newUser.fullName || !newUser.email || !newUser.departmentId || !newUser.password) {
+      return alert("Todos los campos, incluida la contraseña, son obligatorios.");
+    }
+    if (newUser.password !== newUser.confirmPassword) {
+      return alert("Las contraseñas no coinciden.");
+    }
+    try {
+      await createUser({
+        fullName: newUser.fullName,
+        email: newUser.email,
+        role: newUser.role,
+        departmentId: newUser.departmentId,
+        password: newUser.password,
+      });
+      // refrescar lista
+      const updated = await getAllUsers();
+      setUsers(updated);
+      // reset form
+      setNewUser({ fullName: "", email: "", role: "USER", departmentId: "", password: "", confirmPassword: "" });
+      setShowModal(false);
+    } catch (err) {
+      console.error("Error creando usuario:", err);
+      alert(err.response?.data?.message || "Error al crear usuario");
+    }
   };
 
-  const handleDelete = (id) => {
-    setUsers(users.filter((u) => u.id !== id));
-  };
-
+  // Manejar cambios de input
   const handleChange = (e) => {
-    setNewUser({
-      ...newUser,
-      [e.target.name]: e.target.value,
-    });
+    const { name, value } = e.target;
+    setNewUser((prev) => ({ ...prev, [name]: value }));
   };
 
   return (
     <Layout user={user}>
       <h1 className="h3 mb-4">User Management</h1>
 
-      {/* Botón para agregar usuario */}
       <div className="d-flex justify-content-end mb-3">
         <button className="btn btn-primary" onClick={() => setShowModal(true)}>
           <i className="bi bi-person-plus me-2"></i> Add User
         </button>
       </div>
 
-      {/* Tabla de usuarios */}
       <div className="card">
         <div className="card-body">
           <table className="table table-hover">
@@ -109,7 +108,7 @@ const UserManagement = () => {
                   <td>
                     <button
                       className="btn btn-sm btn-danger"
-                      onClick={() => handleDelete(u.id)}
+                      onClick={() => deleteUser(u.id).then(() => setUsers(users.filter(user => user.id !== u.id)))}
                     >
                       <i className="bi bi-trash"></i> Delete
                     </button>
@@ -121,7 +120,6 @@ const UserManagement = () => {
         </div>
       </div>
 
-      {/* Modal para nuevo usuario */}
       <Modal
         show={showModal}
         title="Add New User"
@@ -160,6 +158,26 @@ const UserManagement = () => {
             <option value="MANAGER">Manager</option>
             <option value="ADMIN">Admin</option>
           </select>
+        </div>
+        <div className="mb-3">
+          <label className="form-label">Password</label>
+          <input
+            type="password"
+            className="form-control"
+            name="password"
+            value={newUser.password}
+            onChange={handleChange}
+          />
+        </div>
+        <div className="mb-3">
+          <label className="form-label">Confirm Password</label>
+          <input
+            type="password"
+            className="form-control"
+            name="confirmPassword"
+            value={newUser.confirmPassword}
+            onChange={handleChange}
+          />
         </div>
         <div className="mb-3">
           <label className="form-label">Department</label>

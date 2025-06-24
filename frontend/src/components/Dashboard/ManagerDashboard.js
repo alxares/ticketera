@@ -12,7 +12,7 @@ const ManagerDashboard = () => {
   return (
     <Layout user={user}>
       <h1 className="h3 mb-4">Manager Dashboard</h1>
-      <p className="text-muted">Welcome back, {user.fullName}!</p>
+      <p className="text-muted">Bienvenido, {user.fullName}!</p>
 
       <div className="row">
         <div className="col-md-3 mb-4">
@@ -30,7 +30,7 @@ const ManagerDashboard = () => {
               <i className="bi bi-check-circle"></i>
             </div>
             <div className="stats-number text-success">38</div>
-            <div className="stats-text">Resolved</div>
+            <div className="stats-text">Tickets Resueltos</div>
           </div>
         </div>
         <div className="col-md-3 mb-4">
@@ -39,7 +39,7 @@ const ManagerDashboard = () => {
               <i className="bi bi-hourglass-split"></i>
             </div>
             <div className="stats-number text-warning">18</div>
-            <div className="stats-text">Pending</div>
+            <div className="stats-text">Tickets Pendientes</div>
           </div>
         </div>
         <div className="col-md-3 mb-4">
@@ -48,7 +48,7 @@ const ManagerDashboard = () => {
               <i className="bi bi-exclamation-octagon"></i>
             </div>
             <div className="stats-number text-danger">5</div>
-            <div className="stats-text">Urgent</div>
+            <div className="stats-text">Tickets Urgentes</div>
           </div>
         </div>
       </div>

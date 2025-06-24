@@ -12,7 +12,7 @@ const UserDashboard = () => {
   return (
     <Layout user={user}>
       <h1 className="h3 mb-4">My Dashboard</h1>
-      <p className="text-muted">Welcome back, {user.fullName}!</p>
+      <p className="text-muted">Bienvenido, {user.fullName}!</p>
 
       <div className="row">
         <div className="col-md-3 mb-4">
@@ -30,7 +30,7 @@ const UserDashboard = () => {
               <i className="bi bi-check-circle"></i>
             </div>
             <div className="stats-number text-success">8</div>
-            <div className="stats-text">Resolved</div>
+            <div className="stats-text">Tickets Resueltos</div>
           </div>
         </div>
         <div className="col-md-3 mb-4">
@@ -39,13 +39,13 @@ const UserDashboard = () => {
               <i className="bi bi-hourglass-split"></i>
             </div>
             <div className="stats-number text-warning">4</div>
-            <div className="stats-text">Pending</div>
+            <div className="stats-text">Tickets Pendientes</div>
           </div>
         </div>
         <div className="col-md-3 mb-4">
           <div className="card stats-card bg-light d-flex justify-content-center align-items-center">
             <Link to="/new-ticket" className="btn btn-outline-info w-100">
-              <i className="bi bi-plus-circle me-2"></i> New Ticket
+              <i className="bi bi-plus-circle me-2"></i> Nuevo Ticket
             </Link>
           </div>
         </div>

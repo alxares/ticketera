@@ -5,10 +5,11 @@ import {
   updateUser,
   deleteUser,
 } from '../controllers/user.controller.js';
+import { changeUserPassword } from '../controllers/auth.controller.js';
 
 import verifyToken from '../middleware/auth.js';
 import authorizeRoles from '../middleware/role.js';
-import prisma from '../config/database.js'; // ✅ Importar prisma directamente
+import prisma from '../config/database.js';
 
 const router = express.Router();
 
@@ -21,33 +22,30 @@ router.get('/:id', verifyToken, authorizeRoles('ADMIN'), getUserById);
 // ✅ Actualizar usuario
 router.put('/:id', verifyToken, authorizeRoles('ADMIN'), updateUser);
 
+// ➕ Cambio de contraseña de usuario (solo ADMIN)
+router.put('/:id/password', verifyToken, authorizeRoles('ADMIN'), changeUserPassword);
+
 // ✅ Eliminar usuario
 router.delete('/:id', verifyToken, authorizeRoles('ADMIN'), deleteUser);
 
-// ✅ Obtener usuarios por departamento (para asignación dinámica)
-router.get('/department/:departmentId', verifyToken, async (req, res) => {
-  try {
-    const { departmentId } = req.params;
-
-    const users = await prisma.user.findMany({
-      where: {
-        departmentId,
-        role: {
-          in: ['USER', 'MANAGER'],
-        },
-      },
-      select: {
-        id: true,
-        fullName: true,
-        email: true,
-      },
-    });
-
-    res.json(users);
-  } catch (error) {
-    console.error('❌ Error al obtener usuarios por departamento:', error);
-    res.status(500).json({ message: 'No se pudo obtener la lista de usuarios.' });
+// ✅ Obtener usuarios por departamento (para asignación de tickets)
+// Solo usuarios con rol USER o MANAGER
+router.get(
+  '/department/:departmentId',
+  verifyToken,
+  async (req, res) => {
+    try {
+      const { departmentId } = req.params;
+      const users = await prisma.user.findMany({
+        where: { departmentId, role: { in: ['USER', 'MANAGER'] } },
+        select: { id: true, fullName: true, email: true },
+      });
+      res.json(users);
+    } catch (error) {
+      console.error('❌ Error al obtener usuarios por departamento:', error);
+      res.status(500).json({ message: 'No se pudo obtener la lista de usuarios.' });
+    }
   }
-});
+);
 
 export default router;

@@ -2,7 +2,7 @@ import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import dotenv from "dotenv";
 import prisma from "../config/database.js";
-import { registerSchema, loginSchema } from "../schemas/auth.schema.js";
+import { registerSchema, loginSchema, passwordSchema } from "../schemas/auth.schema.js";
 
 dotenv.config();
 
@@ -24,47 +24,41 @@ const generateToken = (user) => {
 export const registerUser = async (req, res) => {
   try {
     console.log("BODY RECIBIDO", req.body);
+    // Validamos y parseamos datos
     const data = registerSchema.parse(req.body);
+    // Derivar username si no viene
+    const username = data.username ?? data.email.split('@')[0];
 
-    // 🔒 Validar que no se registren en IT
+    // 🔒 Prohibir registro directo en IT para no-admin
     if (data.role !== "ADMIN" && data.departmentId) {
-      const dept = await prisma.department.findUnique({
-        where: { id: data.departmentId },
-      });
-
+      const dept = await prisma.department.findUnique({ where: { id: data.departmentId } });
       if (dept?.name === "IT") {
-        return res.status(403).json({
-          message: "No podés registrarte directamente en el departamento IT.",
-        });
+        return res.status(403).json({ message: "No podés registrarte directamente en el departamento IT." });
       }
     }
 
-    // Verificar existencia previa
-    const existingUser = await prisma.user.findFirst({
-      where: {
-        OR: [{ email: data.email }, { username: data.username }],
-      },
+    // Chequear duplicados
+    const existing = await prisma.user.findFirst({
+      where: { OR: [{ email: data.email }, { username }] },
     });
-
-    if (existingUser) {
+    if (existing) {
       return res.status(400).json({ message: "Usuario o email ya registrado" });
     }
 
+    // Hash de la contraseña
     const hashedPassword = await bcrypt.hash(data.password, 10);
-
     const newUser = await prisma.user.create({
       data: {
         fullName: data.fullName,
         email: data.email,
-        username: data.username,
+        username,
         password: hashedPassword,
-        role: data.role || "USER",
+        role: data.role,
         departmentId: data.departmentId || null,
       },
     });
 
     const token = generateToken(newUser);
-
     res.status(201).json({
       message: "Usuario creado correctamente",
       user: {
@@ -77,11 +71,11 @@ export const registerUser = async (req, res) => {
       },
       token,
     });
-  } catch (error) {
-    if (error.name === "ZodError") {
-      return res.status(400).json({ message: "Datos inválidos", errors: error.errors });
+  } catch (err) {
+    if (err.name === "ZodError") {
+      return res.status(400).json({ message: "Datos inválidos", errors: err.errors });
     }
-    console.error("❌ Error en registro:", error);
+    console.error("❌ Error en registro:", err);
     res.status(500).json({ message: "Error al registrar usuario" });
   }
 };
@@ -90,25 +84,17 @@ export const registerUser = async (req, res) => {
 export const loginUser = async (req, res) => {
   try {
     const data = loginSchema.parse(req.body);
-
     const user = await prisma.user.findFirst({
-      where: {
-        OR: [{ email: data.usernameOrEmail }, { username: data.usernameOrEmail }],
-      },
+      where: { OR: [{ email: data.usernameOrEmail }, { username: data.usernameOrEmail }] },
     });
-
     if (!user) {
       return res.status(401).json({ message: "Usuario no encontrado" });
     }
-
-    const isMatch = await bcrypt.compare(data.password, user.password);
-
-    if (!isMatch) {
+    const isValid = await bcrypt.compare(data.password, user.password);
+    if (!isValid) {
       return res.status(401).json({ message: "Contraseña incorrecta" });
     }
-
     const token = generateToken(user);
-
     res.json({
       message: "Inicio de sesión exitoso",
       user: {
@@ -121,11 +107,28 @@ export const loginUser = async (req, res) => {
       },
       token,
     });
-  } catch (error) {
-    if (error.name === "ZodError") {
-      return res.status(400).json({ message: "Datos inválidos", errors: error.errors });
+  } catch (err) {
+    if (err.name === "ZodError") {
+      return res.status(400).json({ message: "Datos inválidos", errors: err.errors });
     }
-    console.error("❌ Error en login:", error);
+    console.error("❌ Error en login:", err);
     res.status(500).json({ message: "Error al iniciar sesión" });
+  }
+};
+
+// 🔄 Cambio de contraseña de usuario (ADMIN)
+export const changeUserPassword = async (req, res) => {
+  try {
+    const { password } = passwordSchema.parse(req.body);
+    const userId = req.params.id;
+    const hashed = await bcrypt.hash(password, 10);
+    await prisma.user.update({ where: { id: userId }, data: { password: hashed } });
+    res.json({ message: "Contraseña actualizada correctamente" });
+  } catch (err) {
+    if (err.name === "ZodError") {
+      return res.status(400).json({ message: "Contraseña inválida", errors: err.errors });
+    }
+    console.error("❌ Error cambiando contraseña:", err);
+    res.status(500).json({ message: "Error interno" });
   }
 };
